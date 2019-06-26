@@ -1,17 +1,11 @@
-from conversational_net.string_utils import split_in_quotes, get_sentences_before_quote
+from conversational_net.string_utils import split_in_full_conversation
 
 
 def get_conversational_graph(text):
-    quotes = split_in_quotes(text)
-    # result = re.findall(r"“([^”]*)”", rd)
-    print(quotes)
-    print()
-    print()
-    sentences = get_sentences_before_quote(text, quotes)
-    for s in sentences:
+    full_talks = split_in_full_conversation(text)
+    for i in full_talks:
         print("----------")
-        print(s)
-    print(len(sentences) == len(quotes))
+        print(i)
 
 
 if __name__ == '__main__':

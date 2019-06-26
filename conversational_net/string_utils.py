@@ -32,7 +32,7 @@ def get_sentences_before_quote(text, quotes):
         seq_len = next_quote_index - q_index
         # if seq_len is bigger than 100 then the quotes are not related
         if seq_len <= 0 or seq_len > 100:
-            all_sentences.append([])
+            all_sentences.append(-1)
         else:
             sentence = clean(text[q_index:next_quote_index])
             if is_empty(sentence):
@@ -41,6 +41,18 @@ def get_sentences_before_quote(text, quotes):
         q_index = next_quote_index + len(quotes[i])
 
     return all_sentences
+
+
+def split_in_full_conversation(text):
+    res = [""]
+    quotes = split_in_quotes(text)
+    sentences = get_sentences_before_quote(text, quotes)
+    for i in range(len(sentences)):
+        if sentences[i] == -1:      # to much space between two consecutive quotes
+            res.append(quotes[i] + "\n")
+        else:
+            res[-1] += ("" if sentences[i] == [] else sentences[i]) + "\n" + quotes[i] + "\n"
+    return res
 
 
 def is_empty(s):
