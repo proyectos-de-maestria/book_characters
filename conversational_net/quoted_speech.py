@@ -1,4 +1,4 @@
-from conversational_net.string_utils import split_in_full_conversation
+from conversational_net.quotes_utils import split_in_full_conversation
 
 
 def get_conversational_graph(text):
