@@ -19,8 +19,8 @@ def get_sentences_before_quote(text, quotes):
         print("First quote does not exist")
         return
     sentences_before = split_in_sentences(text[:q_index])
-    all_sentences.append(clean(sentences_before[-1]))
-    # print(all_sentences[0])
+    info = {"quote": quotes[0], "before": clean(sentences_before[-1]), "after": -1}
+    all_sentences.append(info)
 
     q_index += len(quotes[0])          # sum len to get starting position of text before quote
     for i in range(1, len(quotes)):
@@ -30,17 +30,31 @@ def get_sentences_before_quote(text, quotes):
             return []
         next_quote_index += q_index       # plus q_index cause is the start of the search
         seq_len = next_quote_index - q_index
+        sentence = clean(text[q_index:next_quote_index])
         # if seq_len is bigger than 100 then the quotes are not related
-        if seq_len <= 0 or seq_len > 100:
-            all_sentences.append([])
+        if seq_len > 100:
+            # there is no after for the old sentence
+            sentences_before = split_in_sentences(sentence)
+            info = {"quote": quotes[i], "before": clean(sentences_before[-1]), "after": -1}
+            all_sentences.append(info)
         else:
-            sentence = clean(text[q_index:next_quote_index])
-            if is_empty(sentence):
-                sentence = []
-            all_sentences.append(sentence)
+            info = {"quote": quotes[i], "before": "" if is_empty(sentence) else sentence, "after": -1}
+            all_sentences[-1]["after"] = "" if is_empty(sentence) else sentence
+            all_sentences.append(info)
         q_index = next_quote_index + len(quotes[i])
 
     return all_sentences
+
+
+def split_in_full_conversation(text):
+    res = [""]
+    quotes = split_in_quotes(text)
+    sentences = get_sentences_before_quote(text, quotes)
+    for sentence in sentences:
+        res[-1] += sentence["before"] + "\n" + sentence["quote"] + "\n"
+        if sentence["after"] == -1:      # to much space between two consecutive quotes
+            res.append("")
+    return res
 
 
 def is_empty(s):
