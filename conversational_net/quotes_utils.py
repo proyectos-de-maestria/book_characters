@@ -22,13 +22,13 @@ def get_sentences_before_quote(text, quotes):
     info = {"quote": quotes[0], "before": clean(sentences_before[-1]), "after": -1}
     all_sentences.append(info)
 
-    q_index += len(quotes[0])          # sum len to get starting position of text before quote
+    q_index += len(quotes[0])  # sum len to get starting position of text before quote
     for i in range(1, len(quotes)):
         next_quote_index = text[q_index:].find(quotes[i])
         if next_quote_index == -1:
             print(str(i) + " quote does not exist")
             return []
-        next_quote_index += q_index       # plus q_index cause is the start of the search
+        next_quote_index += q_index  # plus q_index cause is the start of the search
         seq_len = next_quote_index - q_index
         sentence = clean(text[q_index:next_quote_index])
         # if seq_len is bigger than 100 then the quotes are not related
@@ -52,7 +52,7 @@ def split_in_full_conversation(text):
     sentences = get_sentences_before_quote(text, quotes)
     for sentence in sentences:
         res[-1] += sentence["before"] + "\n" + sentence["quote"] + "\n"
-        if sentence["after"] == -1:      # to much space between two consecutive quotes
+        if sentence["after"] == -1:  # to much space between two consecutive quotes
             res.append("")
     return res
 
@@ -70,5 +70,5 @@ def clean(s):
     if '\n' in s:
         return clean(s.replace("\n", " "))
     if s.endswith(search_tuple):
-        return clean(s[:len(s)-1])
+        return clean(s[:len(s) - 1])
     return s

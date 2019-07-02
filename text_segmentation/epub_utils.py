@@ -21,21 +21,41 @@ def get_info_chapters(book):
     return chapters_info
 
 
+def get_re(phrase):
+    result = ''
+    for word in phrase.split():
+        result += word + "[ \n]+"
+    return result
+
+
 def get_content_by_chapter(chapter_pre, chapter_pos, text):
-    re_chapter_pre = []
-    index_pre = text.find(chapter_pre)
-    index_pos = text.find(chapter_pos)
-    return text[index_pre:index_pos]
+    re_pre = get_re(chapter_pre)
+    re_pos = get_re(chapter_pos)
+    index_pre = re.search(re_pre, text, flags=re.IGNORECASE).span(0)[1]
+    index_pos = re.search(re_pos, text[index_pre:], flags=re.IGNORECASE).span(0)[0]
+
+    return text[index_pre:index_pre + index_pos]
 
 
 def get_text(book):
     text = ''
     for item in book.get_items():
         if item.get_type() == ITEM_DOCUMENT and isinstance(item, epub.EpubHtml) and item._template_name == 'chapter':
-            content = item.get_contr56t5ent()
-            soup_text = BeautifulSoup(content, 'html.parser').get_text()
-            text += soup_text
+            content = item.get_content()
+            soup = BeautifulSoup(content, 'html.parser')
+            codetags = soup.findAll('tbody')
+            for codetag in codetags:
+                codetag.extract()
+            text += soup.get_text()
     return text
+
+
+def save_text(path, book):
+    path = path.replace("epub", "txt")
+    file = open(path, "w")
+    text = get_text(book)
+    file.writelines(text)
+    file.close()
 
 
 def chapter_contents(book):
@@ -48,6 +68,3 @@ def chapter_contents(book):
         chapter_contents[chapter_pre] = get_content_by_chapter(chapter_pre, chapters_pos, text)
     return chapter_contents
 
-
-book = epub.read_epub('../books/Dracula.epub')
-chapter_contents(book)
