@@ -19,7 +19,9 @@ def get_sentences_before_quote(text, quotes):
         print("First quote does not exist")
         return
     sentences_before = split_in_sentences(text[:q_index])
-    info = {"quote": quotes[0], "before": clean(sentences_before[-1]), "after": -1}
+    info = {"quote": quotes[0],
+            "before": clean(sentences_before[-1])  if len(sentences_before) else "",
+            "after": -1}
     all_sentences.append(info)
 
     q_index += len(quotes[0])  # sum len to get starting position of text before quote
@@ -35,7 +37,9 @@ def get_sentences_before_quote(text, quotes):
         if seq_len > 100:
             # there is no after for the old sentence
             sentences_before = split_in_sentences(sentence)
-            info = {"quote": quotes[i], "before": clean(sentences_before[-1]), "after": -1}
+            info = {"quote": quotes[i],
+                    "before": clean(sentences_before[-1]) if len(sentences_before) else "",
+                    "after": -1}
             all_sentences.append(info)
         else:
             info = {"quote": quotes[i], "before": "" if is_empty(sentence) else sentence, "after": -1}
@@ -54,6 +58,24 @@ def split_in_full_conversation(text):
         res[-1] += sentence["before"] + "\n" + sentence["quote"] + "\n"
         if sentence["after"] == -1:  # to much space between two consecutive quotes
             res.append("")
+    return res
+
+
+def split_in_pairs(text):
+    # get (dialog, non dialog) pairs from conversations that are close
+    res = []
+    quotes = split_in_quotes(text)
+    sentences = get_sentences_before_quote(text, quotes)
+    before = ""
+    quote = ""
+    for sentence in sentences:
+        if sentence["before"] != "":
+            before += sentence["before"] + "\n"
+        quote += sentence["quote"] + "\n"
+        if sentence["after"] == -1:  # to much space between two consecutive quotes
+            res.append((quote, before))
+            before = ""
+            quote = ""
     return res
 
 

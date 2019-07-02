@@ -17,6 +17,19 @@ def add_nodes(graph, nodes):
     graph.add_edges_from(edges_kn, color='red')
 
 
+def connect_n_to_nodes(graph, nodes, n):
+    nodes = Counter(nodes)
+
+    names = nodes.keys()
+    edges = [(x, n) for x in names if x != n]
+
+    if len(edges):          # only add it to the graph if there is at least one edge
+        node_count = graph.node[n]['count'] if n in graph else 0
+        graph.add_node(n, count=node_count)
+
+        graph.add_edges_from(edges, color='red')
+
+
 def add_nodes_by_distance(graph, nodes, node):
     nodes = Counter(nodes)
 
@@ -44,7 +57,7 @@ def paint_graph(graph, name):
     nx.draw_networkx_labels(graph, pos, labels, font_size=8, font_color='red', font_weight='bold')
 
     plt.axis('off')
-    plt.savefig(name + ".png")  # save as png
+    plt.savefig(name + ".png")        # save as png
     plt.show()
 
 
