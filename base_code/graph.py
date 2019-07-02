@@ -6,7 +6,7 @@ from collections import Counter
 
 def add_nodes(graph, nodes):
     nodes = Counter(nodes)
-    
+
     for name, count in nodes.items():
         node_count = (graph.node[name]['count'] if name in graph else 0) + count
         graph.add_node(name, count=node_count)
@@ -30,6 +30,19 @@ def connect_n_to_nodes(graph, nodes, n):
         graph.add_edges_from(edges, color='red')
 
 
+def add_nodes_by_distance(graph, nodes, node):
+    nodes = Counter(nodes)
+
+    for name, count in nodes.items():
+        node_count = (graph.node[name]['count'] if name in graph else 0) + count
+        graph.add_node(name, count=node_count)
+
+    names = nodes.keys()
+    edges = [(node, x) for x in names]
+
+    graph.add_edges_from(edges, color='red')
+
+
 def paint_graph(graph, name):
     pos = nx.circular_layout(graph)
     # pos = nx.spring_layout(graph, k=0.70,iterations=20)
@@ -41,7 +54,7 @@ def paint_graph(graph, name):
     labels = {}
     for node in graph.node.keys():
         labels[node] = node
-    nx.draw_networkx_labels(graph,pos,labels,font_size=8, font_color='red', font_weight='bold')    
+    nx.draw_networkx_labels(graph, pos, labels, font_size=8, font_color='red', font_weight='bold')
 
     plt.axis('off')
     plt.savefig(name + ".png")        # save as png
