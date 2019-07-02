@@ -3,14 +3,18 @@ import en_core_web_sm
 
 def spacy_names(text):
     res = {}
-    nlp = en_core_web_sm.load()
     step = 1000000
-    for i in range(step, len(text), step):
-        doc = nlp(text[i - step:i])
-        for entity in doc.ents:
-            if entity.label_ == 'PERSON' or entity.label_ == 'NORP':
-                res[entity.lemma_] = 1 + (1 if res.__contains__(entity.lemma_) else 0)
-            # print(entity.lemma_ + entity.label_)
+    if len(text) > step:
+        nlp = en_core_web_sm.load()
+
+        for i in range(step, len(text), step):
+            doc = nlp(text[i - step:i])
+            for entity in doc.ents:
+                if entity.label_ == 'PERSON' or entity.label_ == 'NORP':
+                    res[entity.lemma_] = 1 + (1 if res.__contains__(entity.lemma_) else 0)
+                # print(entity.lemma_ + entity.label_)
+    else:
+        res = names_in_text(text)
     return res
 
 
@@ -26,7 +30,7 @@ def get_names_in_doc(doc):
 
 
 def names_in_text(text):
-    text = text.replace('\n', '')
+    # text = text.replace('\n', '')
     nlp = en_core_web_sm.load()
     doc = nlp(text)
     # get all possible names

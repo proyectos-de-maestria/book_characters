@@ -1,6 +1,7 @@
 from conversational_net.quotes_utils import split_in_pairs
 from base_code.preprocessing import names_in_text
 from base_code.graph import *
+from base_code.correferents import Correferents
 
 
 def get_conversational_graph(text, graph_name):
@@ -15,9 +16,16 @@ def get_conversational_graph(text, graph_name):
     # names that are mentioned out of the conversation.
     # These most be the ones involved in th dialog.
     no_talk_names = []
+    cor = Correferents(text)
     for talk, no_talk in full_talks:
-        conversation_names.append(names_in_text(talk))
-        no_talk_names.append(names_in_text(no_talk))
+        tn = names_in_text(talk)
+        ntn = names_in_text(no_talk)
+        all_names = list(tn.keys())
+        all_names.extend(ntn.keys())
+        sc = cor.remove_correferents(tn, all_names)
+        scn = cor.remove_correferents(ntn, all_names)
+        conversation_names.append(sc)
+        no_talk_names.append(scn)
 
     graph = nx.Graph()
     for names in no_talk_names:
