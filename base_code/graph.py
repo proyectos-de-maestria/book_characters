@@ -31,6 +31,7 @@ def connect_n_to_nodes(graph, nodes, n):
 
 
 def add_nodes_by_distance(graph, nodes, node):
+    nodes[node] = 1
     nodes = Counter(nodes)
 
     for name, count in nodes.items():
