@@ -23,5 +23,5 @@ def get_distance_graph(book, graph_name, distance):
 
 path = '../books/Dracula.epub'
 book = epub.read_epub(path)
-# get_distance_graph(book, "distance_graph", 100)
+get_distance_graph(book, "distance_graph", 100)
 epub_utils.save_text(path,book)
