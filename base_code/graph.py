@@ -38,7 +38,7 @@ def add_nodes_by_distance(graph, nodes, node):
         graph.add_node(name, count=node_count)
 
     names = nodes.keys()
-    edges = [(name, x) for x in names]
+    edges = [(node, x) for x in names]
 
     graph.add_edges_from(edges, color='red')
 

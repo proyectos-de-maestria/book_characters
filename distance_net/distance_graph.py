@@ -4,7 +4,7 @@ from text_segmentation import epub_utils
 from ebooklib import epub
 
 
-def get_distance_graph(book, graph_name,distance):
+def get_distance_graph(book, graph_name, distance):
     chapters = epub_utils.chapter_contents(book)
     names_in_chapters = get_names_by_chapters(chapters)
     graph = nx.Graph()
