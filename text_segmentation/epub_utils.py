@@ -1,6 +1,7 @@
 from ebooklib import epub, ITEM_DOCUMENT
 from bs4 import BeautifulSoup
 import re
+import codecs
 
 
 def get_info_chapters(book):
@@ -52,9 +53,9 @@ def get_text(book):
 
 def save_text(path, book):
     path = path.replace("epub", "txt")
-    file = open(path, "w")
+    file = codecs.open(path, "w", "utf-8")
     text = get_text(book)
-    file.writelines(text)
+    file.write(text)
     file.close()
 
 
