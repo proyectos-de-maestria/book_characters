@@ -6,15 +6,20 @@ from collections import Counter
 
 def add_nodes(graph, nodes):
     nodes = Counter(nodes)
-
-    for name, count in nodes.items():
-        node_count = (graph.node[name]['count'] if name in graph else 0) + count
-        graph.add_node(name, count=node_count)
+    add_nodes_to_graph(nodes, graph)
 
     names = nodes.keys()
     edges_kn = [(x, y) for x in names for y in names if x != y]
 
     graph.add_edges_from(edges_kn, color='red')
+
+
+def add_nodes_to_graph(nodes, graph):
+    for name, count in nodes.items():
+        node_count = (graph.node[name]['count'] if name in graph else 1) + count
+        if name == "Cape Farewell":
+            a = 0
+        graph.add_node(name, count=node_count)
 
 
 def connect_n_to_nodes(graph, nodes, n):
@@ -24,8 +29,9 @@ def connect_n_to_nodes(graph, nodes, n):
     edges = [(x, n) for x in names if x != n]
 
     if len(edges):          # only add it to the graph if there is at least one edge
-        node_count = graph.node[n]['count'] if n in graph else 0
+        node_count = graph.node[n]['count'] if n in graph else 1
         graph.add_node(n, count=node_count)
+        add_nodes_to_graph(nodes, graph)
 
         graph.add_edges_from(edges, color='red')
 

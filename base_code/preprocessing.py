@@ -22,7 +22,7 @@ def get_names_in_doc(doc):
     res = {}
     # get all possible names
     for entity in doc.ents:
-        if entity.label_ == 'PERSON' or entity.label_ == 'NORP':
+        if entity.label_ == 'PERSON':
             name = entity.lemma_
             if len(name) > 2:
                 res[name] = 1 + (0 if not res.__contains__(name) else res[name])

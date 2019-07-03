@@ -35,6 +35,7 @@ def get_conversational_graph(text, graph_name):
         for name in conversation_names[i]:
             connect_n_to_nodes(graph, no_talk_names[i], name)
 
+    graph = graph.to_undirected()
     save_graph(graph, graph_name)
     paint_graph(graph, graph_name)
     return graph
@@ -42,7 +43,8 @@ def get_conversational_graph(text, graph_name):
 
 if __name__ == '__main__':
     # book_name = "pride and prejudice extract"
-    book_name = "pride and prejudice"
+    # book_name = "pride and prejudice"
+    book_name = "Dracula"
     t = open("../books/" + book_name + ".txt", encoding="utf8")
     rd = t.read()
 
