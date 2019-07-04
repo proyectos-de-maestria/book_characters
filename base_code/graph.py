@@ -4,21 +4,20 @@ import matplotlib.pyplot as plt
 from collections import Counter
 
 
-def add_nodes(graph, nodes):
+def add_kn(graph, nodes):
     nodes = Counter(nodes)
-    add_nodes_to_graph(nodes, graph)
+    if len(nodes.keys()) > 1:
+        add_nodes_to_graph(nodes, graph)
 
-    names = nodes.keys()
-    edges_kn = [(x, y) for x in names for y in names if x != y]
+        names = nodes.keys()
+        edges_kn = [(x, y) for x in names for y in names if x != y]
 
-    graph.add_edges_from(edges_kn, color='red')
+        graph.add_edges_from(edges_kn, color='red')
 
 
 def add_nodes_to_graph(nodes, graph):
     for name, count in nodes.items():
         node_count = (graph.node[name]['count'] if name in graph else 1) + count
-        if name == "Cape Farewell":
-            a = 0
         graph.add_node(name, count=node_count)
 
 
