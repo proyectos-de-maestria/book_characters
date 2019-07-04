@@ -6,19 +6,21 @@ import codecs
 
 def get_info_chapters(book):
     chapters_info = []
-    for _, chapters in book.toc:
-        for chapter in chapters:
-            if chapter.title.upper() != "CONTENTS":
-                info = chapter.href.split('#')
-                item = book.get_item_with_href(info[0])
-                content = str(item.get_content())
-                index = content.find(info[1])
-                chapters_info.append({
-                    'title': chapter.title,
-                    'id': info[1],
-                    'href': info[0],
-                    'index': index
-                })
+    # for _, chapters in book.toc:
+    for chapter in book.toc:
+        if hasattr(chapter, '__iter__'):
+            chapter = chapter[0]
+        if chapter.title.upper() != "CONTENTS":
+            info = chapter.href.split('#')
+            item = book.get_item_with_href(info[0])
+            content = str(item.get_content())
+            index = content.find(info[1])
+            chapters_info.append({
+                'title': chapter.title,
+                'id': info[1],
+                'href': info[0],
+                'index': index
+            })
     return chapters_info
 
 
@@ -45,6 +47,8 @@ def get_text(book):
             content = item.get_content()
             soup = BeautifulSoup(content, 'html.parser')
             codetags = soup.findAll('tbody')
+            if len(codetags) == 0:
+                codetags = soup.findAll("blockquote")
             for codetag in codetags:
                 codetag.extract()
             text += soup.get_text()

@@ -21,7 +21,9 @@ def get_distance_graph(book, graph_name, distance):
     return graph
 
 
-path = '../books/Dracula.epub'
+path = '../books/My young Maste.epub'
+graph = load_graph('distance_graph')
 book = epub.read_epub(path)
-get_distance_graph(book, "distance_graph", 100)
+get_distance_graph(book, "distance_graph", 150)
 epub_utils.save_text(path, book)
+# circular_tree(graph)
