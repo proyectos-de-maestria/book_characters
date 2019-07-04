@@ -55,7 +55,8 @@ class Correferents:
                     if category not in self.female_title and category not in self.male_title:
                         rest = category + " " + rest
                 f_name = self.full_name(rest, ge, search_names)
-                res[f_name] = names_in_text[name] if f_name not in res.keys() else names_in_text[name] + res[f_name]
+                if len(f_name):
+                    res[f_name] = names_in_text[name] if f_name not in res.keys() else names_in_text[name] + res[f_name]
         return res
 
     def full_name(self, name, gen, search_names):
@@ -75,4 +76,5 @@ class Correferents:
             possibilities_in_text = [n for n in possibles_names if n in search_names]
             if len(possibilities_in_text) == 1:
                 return possibilities_in_text[0]
-        return name
+            return name
+        return ""

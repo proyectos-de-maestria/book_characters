@@ -7,8 +7,13 @@ def split_in_quotes(text):
 
 
 def split_in_sentences(text):
-    # sentences that end in a dot
-    return re.findall("([^.]*)[.]", text)
+    # paragraphs are divided with \n\n
+    paragraph = text.split("\n\n")
+    if len(paragraph) and is_empty(paragraph[-1]):
+        paragraph = paragraph[:-1]
+    return paragraph
+    # # sentences that end in a dot
+    # return re.findall("([^.]*)[.]", text)
 
 
 def get_sentences_before_quote(text, quotes):
@@ -20,7 +25,7 @@ def get_sentences_before_quote(text, quotes):
         return
     sentences_before = split_in_sentences(text[:q_index])
     info = {"quote": quotes[0],
-            "before": clean(sentences_before[-1])  if len(sentences_before) else "",
+            "before": clean(sentences_before[-1]) if len(sentences_before) else "",
             "after": -1}
     all_sentences.append(info)
 

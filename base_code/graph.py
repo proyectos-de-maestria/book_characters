@@ -1,35 +1,33 @@
+import networkx as nx
 from networkx.readwrite import gml
 import matplotlib.pyplot as plt
 from collections import Counter
-import networkx as nx
-import pydot
-from networkx.drawing.nx_pydot import graphviz_layout
 
-def add_nodes(graph, nodes):
+
+def add_kn(graph, nodes):
     nodes = Counter(nodes)
-    add_nodes_to_graph(nodes, graph)
+    if len(nodes.keys()) > 1:
+        add_nodes_to_graph(nodes, graph)
 
-    names = nodes.keys( )
-    edges_kn = [(x, y) for x in names for y in names if x != y]
+        names = nodes.keys()
+        edges_kn = [(x, y) for x in names for y in names if x != y]
 
-    graph.add_edges_from(edges_kn, color='red')
+        graph.add_edges_from(edges_kn, color='red')
 
 
 def add_nodes_to_graph(nodes, graph):
-    for name, count in nodes.items( ):
+    for name, count in nodes.items():
         node_count = (graph.node[name]['count'] if name in graph else 1) + count
-        if name == "Cape Farewell":
-            a = 0
         graph.add_node(name, count=node_count)
 
 
 def connect_n_to_nodes(graph, nodes, n):
     nodes = Counter(nodes)
 
-    names = nodes.keys( )
+    names = nodes.keys()
     edges = [(x, n) for x in names if x != n]
 
-    if len(edges):  # only add it to the graph if there is at least one edge
+    if len(edges):          # only add it to the graph if there is at least one edge
         node_count = graph.node[n]['count'] if n in graph else 1
         graph.add_node(n, count=node_count)
         add_nodes_to_graph(nodes, graph)
@@ -61,22 +59,13 @@ def paint_graph(graph, name):
     nx.draw_networkx_edges(graph, pos)
 
     labels = {}
-    for node in graph.node.keys( ):
+    for node in graph.node.keys():
         labels[node] = node
     nx.draw_networkx_labels(graph, pos, labels, font_size=8, font_color='red', font_weight='bold')
 
     plt.axis('off')
-    plt.savefig(name + ".png")  # save as png
-    plt.show( )
-
-
-def edge_colormap(graph):
-    pos = nx.spring_layout(graph)
-    colors = range(len(graph.nodes.keys()))
-    nx.draw(graph, pos, node_color='#A0CBE2', edge_color=colors,
-            width=4, edge_cmap=plt.cm.Blues, with_labels=True)
+    plt.savefig(name + ".png")        # save as png
     plt.show()
-
 
 
 def save_graph(graph, name):

@@ -8,4 +8,4 @@ def script(s):
 
 
 def valid_name(n):
-    return not apostrophe(n) and not script(n)
+    return not apostrophe(n) and not script(n) and len(n) > 1 and n[0].isupper()

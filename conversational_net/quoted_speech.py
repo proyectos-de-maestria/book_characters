@@ -29,7 +29,7 @@ def get_conversational_graph(text, graph_name):
 
     graph = nx.Graph()
     for names in no_talk_names:
-        add_nodes(graph, names)
+        add_kn(graph, names)
 
     for i in range(len(conversation_names)):
         for name in conversation_names[i]:
