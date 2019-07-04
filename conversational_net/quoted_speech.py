@@ -4,15 +4,11 @@ from base_code.graph import *
 from base_code.correferents import Correferents
 
 
-def get_conversational_graph(text, graph_name):
+def get_conversational_graph(text):
     full_talks = split_in_pairs(text)
-    # for i in full_talks:
-    #     print("----------")
-    #     print(i[0])
-    #     print("-- DOS --")
-    #     print(i[1])
 
-    conversation_names = []             # names that are mentioned in the conversation
+    # names that are mentioned in the conversation
+    conversation_names = []
     # names that are mentioned out of the conversation.
     # These most be the ones involved in th dialog.
     no_talk_names = []
@@ -35,10 +31,7 @@ def get_conversational_graph(text, graph_name):
         for name in conversation_names[i]:
             connect_n_to_nodes(graph, no_talk_names[i], name)
 
-    graph = graph.to_undirected()
-    save_graph(graph, graph_name)
-    paint_graph(graph, graph_name)
-    return graph
+    return graph.to_undirected()
 
 
 if __name__ == '__main__':
@@ -48,4 +41,7 @@ if __name__ == '__main__':
     t = open("../books/" + book_name + ".txt", encoding="utf8")
     rd = t.read()
 
-    get_conversational_graph(rd, "./graphs/conv_" + book_name)
+    graph_name = "./graphs/conv_" + book_name
+    graph = get_conversational_graph(rd)
+    save_graph(graph, graph_name)
+    # paint_graph(graph, graph_name)

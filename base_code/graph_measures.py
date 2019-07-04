@@ -1,7 +1,8 @@
 import networkx as nx
 from operator import itemgetter
+import community
 
-from base_code.graph import load_graph
+from base_code.graph import load_graph, save_graph
 
 
 def top_n_degree(graph, n=10):
@@ -23,9 +24,32 @@ def top_n_betweenness(graph, n=10):
     return sorted_betweenness[:n]
 
 
+def center(graph):
+    components = max(nx.connected_components(graph))
+    return nx.algorithms.center(graph.subgraph(components))
+
+
+def paint_communities(graph):
+    communities = community.best_partition(graph)
+
+    size = float(len(set(communities.values())))
+    count = 0
+    for com in set(communities.values()):
+        count = count + 1.
+        list_nodes = [nodes for nodes in communities.keys()
+                      if communities[nodes] == com]
+        for node in list_nodes:
+            # graph.add_node(node, com_color=count/size)
+            graph.nodes[node]['color'] = count / size
+
+    return communities
+
+
 if __name__ == '__main__':
     graph_name = "conv_Dracula"
     graph = load_graph("../conversational_net/graphs/" + graph_name)
+    # paint_graph(graph, 'test')
+
     graph = graph.to_undirected()
     print("Top 10 nodes by degree:")
     for n in top_n_degree(graph):
@@ -40,3 +64,10 @@ if __name__ == '__main__':
     print("Top 10 nodes by betweenness centrality:")
     for n in top_n_betweenness(graph):
         print(n)
+
+    print("------------------------------------------------------")
+    for n in center(graph):
+        print(n)
+
+    paint_communities(graph)
+    save_graph(graph, "test")
