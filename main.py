@@ -1,16 +1,12 @@
 from os import path
 
-from conversational_net.quoted_speech import get_conversational_graph, evolution_talk_graph
-from base_code.graph import save_graph, load_graph
+from conversational_net.quoted_speech import get_graph
 from base_code import graph_measures
 from base_code.utils import *
 
 
-def build_conversational_graph(book_name, book_folder="books/"):
-    t = open(book_folder + book_name + ".txt", encoding="utf8")
-    rd = t.read()
-
-    return get_conversational_graph(rd)
+def build_conversational_graph(book_path, graph_path):
+    return get_graph(book_path, graph_path)
 
 
 def main_characters(graph):
@@ -21,15 +17,12 @@ def main_characters(graph):
     return ord_degree
 
 
-def build_evolution_conv(book_name, book_folder="books/", try_load=True):
+def build_evolution(graph_helper, try_load=True):
     filename = 'evol_graph.pkl'
     if try_load and path.exists(filename):
         evol = list(pickled_items(filename))[0]["1"]
     else:
-        t = open(book_folder + book_name + ".txt", encoding="utf8")
-        rd = t.read()
-
-        evol = evolution_talk_graph(rd)
+        evol = graph_helper.build_evolution_graph()
 
         save_object(filename, {"1": evol})
     return [main_characters(x) for x in evol]
@@ -37,18 +30,15 @@ def build_evolution_conv(book_name, book_folder="books/", try_load=True):
 
 if __name__ == "__main__":
     book = "Dracula"
+    book_path = "books/" + book
     graphs_folder = "conversational_net/graphs/conv_"
     graph_path = graphs_folder + book
-    if path.exists(graph_path + ".gml"):
-        c_graph = load_graph(graph_path)
-    else:
-        c_raph = build_conversational_graph(book)
-        save_graph(c_raph, graph_path)
 
-    # stars = main_characters(c_graph)
-    # for n in stars:
-    #     print(n)
+    graph_ = build_conversational_graph(book_path, graph_path)
+    stars = main_characters(graph_.graph)
+    for m in stars:
+        print(m)
 
-    main_evol = build_evolution_conv(book)
+    main_evol = build_evolution(graph_)
     data = transform_evol_list_in_dict(main_evol)
     bar_graph(data)

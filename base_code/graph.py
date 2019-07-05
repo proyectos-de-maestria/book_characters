@@ -3,6 +3,8 @@ from networkx.readwrite import gml
 import matplotlib.pyplot as plt
 from collections import Counter
 
+from base_code.correferents import Correferents
+
 
 def add_kn(graph, nodes):
     nodes = Counter(nodes)
@@ -74,3 +76,26 @@ def save_graph(graph, name):
 
 def load_graph(name):
     return gml.read_gml(name + ".gml")
+
+
+class GraphHelper:
+
+    def __init__(self, text, graph_path, evol_number=10):
+        self.text = text
+        self.path = graph_path
+        self.correferent = Correferents(text)
+        self.graph = None
+        self.evol_graphs = []
+        self.evol_number = evol_number
+
+    def build_graph(self):
+        pass
+
+    def build_evolution_graph(self):
+        pass
+
+    def save_graph(self):
+        save_graph(self.graph, self.path)
+
+    def load_graph(self):
+        self.graph = load_graph(self.path)
