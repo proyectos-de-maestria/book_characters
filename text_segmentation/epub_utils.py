@@ -6,21 +6,23 @@ import codecs
 
 def get_info_chapters(book):
     chapters_info = []
-    # for _, chapters in book.toc:
-    for chapter in book.toc:
-        if hasattr(chapter, '__iter__'):
-            chapter = chapter[0]
-        if chapter.title.upper() != "CONTENTS":
-            info = chapter.href.split('#')
-            item = book.get_item_with_href(info[0])
-            content = str(item.get_content())
-            index = content.find(info[1])
-            chapters_info.append({
-                'title': chapter.title,
-                'id': info[1],
-                'href': info[0],
-                'index': index
-            })
+    for tocs in book.toc:
+        if not hasattr(tocs, '__iter__'):
+            tocs = [tocs]
+        else:
+            tocs = tocs[1]
+        for chapter in tocs:
+            if chapter.title.upper() != "CONTENTS":
+                info = chapter.href.split('#')
+                item = book.get_item_with_href(info[0])
+                content = str(item.get_content())
+                index = content.find(info[1])
+                chapters_info.append({
+                    'title': chapter.title,
+                    'id': info[1],
+                    'href': info[0],
+                    'index': index
+                })
     return chapters_info
 
 

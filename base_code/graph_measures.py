@@ -24,8 +24,8 @@ def top_n_betweenness(graph, n=10):
 
 
 if __name__ == '__main__':
-    graph_name = "conv_Dracula"
-    graph = load_graph("../conversational_net/graphs/" + graph_name)
+    graph_name = "Dracula.epub"
+    graph = load_graph("../books/" + graph_name)
     graph = graph.to_undirected()
     print("Top 10 nodes by degree:")
     for n in top_n_degree(graph):
