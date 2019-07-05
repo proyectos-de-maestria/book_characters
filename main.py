@@ -50,6 +50,5 @@ if __name__ == "__main__":
     #     print(n)
 
     main_evol = build_evolution_conv(book)
-
-    for m in main_evol:
-        print(m)
+    data = transform_evol_list_in_dict(main_evol)
+    bar_graph(data)
