@@ -1,8 +1,9 @@
 from os import path
 
-from conversational_net.quoted_speech import get_conversational_graph
+from conversational_net.quoted_speech import get_conversational_graph, evolution_talk_graph
 from base_code.graph import save_graph, load_graph
 from base_code import graph_measures
+from base_code.utils import *
 
 
 def build_conversational_graph(book_name, book_folder="books/"):
@@ -14,9 +15,24 @@ def build_conversational_graph(book_name, book_folder="books/"):
 
 def main_characters(graph):
     ord_degree = graph_measures.top_n_degree(graph)
-    max_degree = ord_degree[0][1]
-    ord_degree = [(name, degree/max_degree) for name, degree in ord_degree if degree/max_degree >= 0.5]
+    if len(ord_degree):
+        max_degree = ord_degree[0][1]
+        ord_degree = [(name, degree/max_degree) for name, degree in ord_degree if degree/max_degree >= 0.5]
     return ord_degree
+
+
+def build_evolution_conv(book_name, book_folder="books/", try_load=True):
+    filename = 'evol_graph.pkl'
+    if try_load and path.exists(filename):
+        evol = list(pickled_items(filename))[0]["1"]
+    else:
+        t = open(book_folder + book_name + ".txt", encoding="utf8")
+        rd = t.read()
+
+        evol = evolution_talk_graph(rd)
+
+        save_object(filename, {"1": evol})
+    return [main_characters(x) for x in evol]
 
 
 if __name__ == "__main__":
@@ -29,6 +45,11 @@ if __name__ == "__main__":
         c_raph = build_conversational_graph(book)
         save_graph(c_raph, graph_path)
 
-    stars = main_characters(c_graph)
-    for n in stars:
-        print(n)
+    # stars = main_characters(c_graph)
+    # for n in stars:
+    #     print(n)
+
+    main_evol = build_evolution_conv(book)
+
+    for m in main_evol:
+        print(m)
