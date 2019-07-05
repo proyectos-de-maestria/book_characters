@@ -39,14 +39,15 @@ def add_nodes_by_distance(graph, nodes, node):
     nodes[node] = 1
     nodes = Counter(nodes)
 
-    for name, count in nodes.items():
-        node_count = (graph.node[name]['count'] if name in graph else 0) + count
-        graph.add_node(name, count=node_count)
+    names = nodes.keys( )
+    edges = [(node, x, 1 + graph.edges[node, x]['weight']) if graph.has_edge(node, x) else (node, x, 1) for x in names
+             if node != x]
+    if len(edges):
+        for name, count in nodes.items( ):
+            node_count = (graph.node[name]['count'] if name in graph else 0) + count
+            graph.add_node(name, count=node_count)
 
-    names = nodes.keys()
-    edges = [(node, x) for x in names]
-
-    graph.add_edges_from(edges, color='red')
+    graph.add_weighted_edges_from(edges)
 
 
 def paint_graph(graph, name):

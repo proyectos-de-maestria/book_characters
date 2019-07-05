@@ -1,4 +1,4 @@
-from base_code.preprocessing import get_names_by_chapters,names_in_text
+from base_code.preprocessing import get_names_by_chapters, names_in_text
 from base_code.graph import *
 from text_segmentation import epub_utils
 from ebooklib import epub
@@ -21,7 +21,9 @@ def get_distance_graph(book, graph_name, distance):
     return graph
 
 
-path = '../books/Dracula.epub'
+path = '../books/My young Maste.epub'
+graph = load_graph('distance_graph')
 book = epub.read_epub(path)
-get_distance_graph(book, "distance_graph", 100)
-epub_utils.save_text(path,book)
+get_distance_graph(book, "distance_graph", 150)
+epub_utils.save_text(path, book)
+# circular_tree(graph)
