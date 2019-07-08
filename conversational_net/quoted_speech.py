@@ -58,7 +58,9 @@ class ConversationalGraph(GraphHelper):
 
 
 def get_graph(book_path, graph_path="graph"):
-    t = open(book_path + ".txt", encoding="utf8")
+    if not book_path.endswith(".txt"):
+        book_path += ".txt"
+    t = open(book_path, encoding="utf8")
     rd = t.read()
 
     return ConversationalGraph(rd, graph_path)
