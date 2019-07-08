@@ -31,28 +31,37 @@ def build_evolution(graph_helper, try_load=True):
     if try_load and path.exists(filename):
         evol = list(pickled_items(filename))[0]["1"]
     else:
-        evol = graph_helper.build_evolution_graph( )
+        evol = graph_helper.build_evolution_graph()
 
         save_object(filename, {"1": evol})
     return [main_characters(x) for x in evol]
 
 
+def run_main(file):
+    data = {}
+    graph = get_graph_from_file(file)
+    stars = main_characters(graph.graph)
+    data['stars'] = stars
+    return data
+
+
 if __name__ == "__main__":
     book = "Dracula.epub"
+    # book = "pride and prejudice extract"
     book_path = "books/" + book
-    graphs_folder = "conversational_net/graph"
+    graphs_folder = "conversational_net/graphs/conv_"
     graph_path = graphs_folder + book
     graph_path_distance = "distance_net/graph" + book
-    # cg = ConversationalGraph(book_path, graph_path)
-    dg = DistanceGraph(book_path, graph_path_distance, distance=100)
+    cg = ConversationalGraph(book_path, graph_path)
+    # dg = DistanceGraph(book_path, graph_path_distance, distance=100)
 
     # cg.build_graph()
     # dg.build_graph()
-    dg.load_graph()
-    stars = main_characters(dg.graph)
-    for m in stars:
-        print(m)
-    #
-    # main_evol = build_evolution(graph_)
-    # data = transform_evol_list_in_dict(main_evol)
-    # bar_graph(data)
+    # dg.load_graph()
+    # stars = main_characters(dg.graph)
+    # for m in stars:
+    #     print(m)
+    # #
+    main_evol = build_evolution(cg)
+    data = transform_evol_list_in_dict(main_evol)
+    bar_graph(data)
