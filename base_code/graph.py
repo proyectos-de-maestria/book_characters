@@ -41,11 +41,11 @@ def add_nodes_by_distance(graph, nodes, node):
     nodes[node] = 1
     nodes = Counter(nodes)
 
-    names = nodes.keys( )
+    names = nodes.keys()
     edges = [(node, x, 1 + graph.edges[node, x]['weight']) if graph.has_edge(node, x) else (node, x, 1) for x in names
              if node != x]
     if len(edges):
-        for name, count in nodes.items( ):
+        for name, count in nodes.items():
             node_count = (graph.node[name]['count'] if name in graph else 0) + count
             graph.add_node(name, count=node_count)
 
@@ -80,10 +80,13 @@ def load_graph(name):
 
 class GraphHelper:
 
-    def __init__(self, text, graph_path, evol_number=10):
+    def __init__(self, book_path, graph_path, text, evol_number=10):
+        self.book_path = book_path
+        # text = open(book_path + ".txt", encoding="utf8")
+        # self.text = text.read( )
         self.text = text
         self.path = graph_path
-        self.correferent = Correferents(text)
+        self.correferent = Correferents(self.text)
         self.graph = None
         self.evol_graphs = []
         self.evol_number = evol_number
