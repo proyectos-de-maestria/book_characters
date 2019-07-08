@@ -8,9 +8,8 @@ import codecs
 class ConversationalGraph(GraphHelper):
 
     def __init__(self, book_path, graph_path):
-        super().__init__( book_path, graph_path)
-        text = open(book_path + ".txt", encoding="utf8")
-        self.text = text.read( )
+        text = open(book_path + ".txt", encoding="utf8").read()
+        super().__init__(book_path, graph_path, text)
         self.conversation_names, self.no_talk_names = self.__talk_ntalk_names__()
         self.build_graph()
 
@@ -58,11 +57,11 @@ class ConversationalGraph(GraphHelper):
         return self.evol_graphs
 
 
-# def get_graph(book_path, graph_path="graph"):
-#     t = open(book_path + ".txt", encoding="utf8")
-#     rd = t.read()
-#
-#     return ConversationalGraph(rd, graph_path)
+def get_graph(book_path, graph_path="graph"):
+    t = open(book_path + ".txt", encoding="utf8")
+    rd = t.read()
+
+    return ConversationalGraph(rd, graph_path)
 
 
 def get_graph_from_file(file):

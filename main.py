@@ -52,16 +52,17 @@ if __name__ == "__main__":
     graphs_folder = "conversational_net/graphs/conv_"
     graph_path = graphs_folder + book
     graph_path_distance = "distance_net/graph" + book
-    # cg = ConversationalGraph(book_path, graph_path)
-    dg = DistanceGraph(book_path, graph_path_distance, distance=100)
+    cg = ConversationalGraph(book_path, graph_path)
+    # dg = DistanceGraph(book_path, graph_path_distance, distance=100)
 
     # cg.build_graph()
     # dg.build_graph()
-    dg.load_graph()
-    stars = main_characters(dg.graph)
+    # dg.load_graph()
+    # stars = main_characters(dg.graph)
+    stars = main_characters(cg.graph)
     for m in stars:
         print(m)
     #
-    # main_evol = build_evolution(graph_)
-    # data = transform_evol_list_in_dict(main_evol)
-    # bar_graph(data)
+    main_evol = build_evolution(cg)
+    data = transform_evol_list_in_dict(main_evol)
+    bar_graph(data)
