@@ -7,8 +7,8 @@ def split_in_quotes(text):
 
 
 def split_in_sentences(text):
-    # paragraphs are divided with \n\n
-    paragraph = text.split("\n\n")
+    # paragraphs are divided with \n
+    paragraph = text.split("\n")
     if len(paragraph) and is_empty(paragraph[-1]):
         paragraph = paragraph[:-1]
     return paragraph
