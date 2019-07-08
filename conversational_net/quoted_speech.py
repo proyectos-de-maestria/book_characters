@@ -1,51 +1,74 @@
 from conversational_net.quotes_utils import split_in_pairs
 from base_code.preprocessing import names_in_text
 from base_code.graph import *
-from base_code.correferents import Correferents
 
 
-def get_conversational_graph(text, graph_name):
-    full_talks = split_in_pairs(text)
-    # for i in full_talks:
-    #     print("----------")
-    #     print(i[0])
-    #     print("-- DOS --")
-    #     print(i[1])
+class ConversationalGraph(GraphHelper):
 
-    conversation_names = []             # names that are mentioned in the conversation
-    # names that are mentioned out of the conversation.
-    # These most be the ones involved in th dialog.
-    no_talk_names = []
-    cor = Correferents(text)
-    for talk, no_talk in full_talks:
-        tn = names_in_text(talk)
-        ntn = names_in_text(no_talk)
-        all_names = list(tn.keys())
-        all_names.extend(ntn.keys())
-        sc = cor.remove_correferents(tn, all_names)
-        scn = cor.remove_correferents(ntn, all_names)
-        conversation_names.append(sc)
-        no_talk_names.append(scn)
+    def __init__(self, book_path, graph_path):
+        super().__init__( book_path, graph_path)
+        text = open(book_path + ".txt", encoding="utf8")
+        self.text = text.read( )
+        self.conversation_names, self.no_talk_names = self.__talk_ntalk_names__()
+        self.build_graph()
 
-    graph = nx.Graph()
-    for names in no_talk_names:
-        add_kn(graph, names)
+    def __talk_ntalk_names__(self):
+        full_talks = split_in_pairs(self.text)
+        # names that are mentioned in the conversation
+        conversation_names = []
+        # names that are mentioned out of the conversation.
+        # These most be the ones involved in th dialog.
+        no_talk_names = []
+        for talk, no_talk in full_talks:
+            tn = names_in_text(talk)
+            ntn = names_in_text(no_talk)
+            all_names = list(tn.keys())
+            all_names.extend(ntn.keys())
+            sc = self.correferent.remove_correferents(tn, all_names)
+            scn = self.correferent.remove_correferents(ntn, all_names)
+            conversation_names.append(sc)
+            no_talk_names.append(scn)
+        return conversation_names, no_talk_names
 
-    for i in range(len(conversation_names)):
-        for name in conversation_names[i]:
-            connect_n_to_nodes(graph, no_talk_names[i], name)
+    def build_graph(self):
+        self.graph = nx.Graph()
+        for names in self.no_talk_names:
+            add_kn(self.graph, names)
+        for i in range(len(self.conversation_names)):
+            for name in self.conversation_names[i]:
+                connect_n_to_nodes(self.graph, self.no_talk_names[i], name)
+        self.save_graph()
+        return self.graph.to_undirected()
 
-    graph = graph.to_undirected()
-    save_graph(graph, graph_name)
-    paint_graph(graph, graph_name)
-    return graph
+    def build_evolution_graph(self):
+        self.evol_graphs = []
+
+        times_to_build = len(self.conversation_names) // self.evol_number
+
+        graph = nx.Graph()
+        for i in range(len(self.conversation_names)):
+            add_kn(graph, self.no_talk_names[i])
+            for name in self.conversation_names[i]:
+                connect_n_to_nodes(graph, self.no_talk_names[i], name)
+            if i % times_to_build == 0 and i != 0:
+                self.evol_graphs.append(graph.copy())
+        self.evol_graphs.append(graph.copy())
+        return self.evol_graphs
+
+
+# def get_graph(book_path, graph_path="graph"):
+#     t = open(book_path + ".txt", encoding="utf8")
+#     rd = t.read()
+#
+#     return ConversationalGraph(rd, graph_path)
 
 
 if __name__ == '__main__':
     # book_name = "pride and prejudice extract"
     # book_name = "pride and prejudice"
-    book_name = "Dracula"
-    t = open("../books/" + book_name + ".txt", encoding="utf8")
-    rd = t.read()
+    book = "Dracula"
 
-    get_conversational_graph(rd, "./graphs/conv_" + book_name)
+    # graph = get_graph(book)
+    # graph.save_graph()
+    # save_graph(graph, graph_name)
+    # paint_graph(graph, graph_name)
