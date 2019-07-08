@@ -1,6 +1,8 @@
 from conversational_net.quotes_utils import split_in_pairs
 from base_code.preprocessing import names_in_text
 from base_code.graph import *
+from text_segmentation.epub_utils import save_text
+import codecs
 
 
 class ConversationalGraph(GraphHelper):
@@ -59,6 +61,19 @@ def get_graph(book_path, graph_path="graph"):
     rd = t.read()
 
     return ConversationalGraph(rd, graph_path)
+
+
+def get_graph_from_file(file):
+    book_path = file.name
+    print(book_path)
+    if file.name.endswith("epub"):
+        save_text(book_path, file)
+    else:
+        filed = codecs.open(book_path, "w", "utf-8")
+        text = file.read().decode("utf-8")
+        filed.write(text)
+        filed.close()
+    return get_graph(book_path)
 
 
 if __name__ == '__main__':

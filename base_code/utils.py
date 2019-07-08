@@ -34,12 +34,22 @@ def transform_evol_list_in_dict(main_evol):
 
 
 def bar_graph(data):
-    start_x = 0
-    for name in data.keys():
-        x_list = [start_x + len(data.keys())*i for i in range(len(data[name]))]
-        plt.bar(x_list, data[name], width=1, label=name)
-        start_x += 1
-    plt.legend(loc='upper left')
-    plt.ylabel('% de grado del nodo')
-    plt.xlabel('evolucion en el tiempo')
-    plt.show()
+    if len(data.keys()):
+        start_x = 0
+        for name in data.keys():
+            x_list = [start_x + len(data.keys())*i for i in range(len(data[name]))]
+            plt.bar(x_list, data[name], width=1, label=name)
+            # plt.plot(x_list, data[name], label=name)
+            start_x += 1
+
+        # x = [len(data.keys())*i - 0.5 for i in range(len(data.keys()))]
+        x = [len(data.keys())*i - 0.5 for i in range(len(data[name]))]
+        ymin = [0]
+        ymax = [0.2]
+        plt.vlines(x, ymin, ymax, color='black', linewidth=2)
+
+        plt.legend(loc='upper left')
+        plt.ylabel('% de grado del nodo')
+        plt.xlabel('evolución en el tiempo (las líneas negras son un nuevo segmento temporal)')
+        plt.title("Evolución de los personajes")
+        plt.show()

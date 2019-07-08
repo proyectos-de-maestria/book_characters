@@ -1,6 +1,6 @@
 from os import path
 
-from conversational_net.quoted_speech import get_graph
+from conversational_net.quoted_speech import get_graph, get_graph_from_file
 from base_code import graph_measures
 from base_code.utils import *
 
@@ -28,17 +28,27 @@ def build_evolution(graph_helper, try_load=True):
     return [main_characters(x) for x in evol]
 
 
+def run_main(file):
+    data = {}
+    graph = get_graph_from_file(file)
+    stars = main_characters(graph.graph)
+    data['stars'] = stars
+    return data
+
+
 if __name__ == "__main__":
     book = "Dracula"
+    book = "pride and prejudice extract"
     book_path = "books/" + book
     graphs_folder = "conversational_net/graphs/conv_"
     graph_path = graphs_folder + book
 
-    graph_ = build_conversational_graph(book_path, graph_path)
-    stars = main_characters(graph_.graph)
-    for m in stars:
-        print(m)
-
-    main_evol = build_evolution(graph_)
+    # graph_ = build_conversational_graph(book_path, graph_path)
+    # stars = main_characters(graph_.graph)
+    # for m in stars:
+    #     print(m)
+    #
+    # main_evol = build_evolution(graph_)
+    main_evol = build_evolution(None)
     data = transform_evol_list_in_dict(main_evol)
     bar_graph(data)
