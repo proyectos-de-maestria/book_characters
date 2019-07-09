@@ -3,6 +3,7 @@ import re
 
 def split_in_quotes(text):
     quotes = re.findall(r"“([^”]*)”", text)
+    quotes.extend(re.findall(r"\"([^\"]*)\"", text))
     return quotes
 
 
@@ -19,6 +20,8 @@ def split_in_sentences(text):
 def get_sentences_before_quote(text, quotes):
     all_sentences = []
 
+    if not len(quotes):
+        return []
     q_index = text.find(quotes[0])
     if q_index == -1:
         print("First quote does not exist")
