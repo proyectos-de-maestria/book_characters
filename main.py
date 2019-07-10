@@ -13,7 +13,6 @@ from conversational_net.quoted_speech import *
 #     return get_distance_graph(book_path, graph_path, distance)
 
 
-
 def main_characters(graph):
     ord_degree = graph_measures.top_n_degree(graph)
     if len(ord_degree):
@@ -37,6 +36,10 @@ def build_evolution(graph_helper, try_load=True):
     return [main_characters(x) for x in evol]
 
 
+def character_sustitution(graph, name):
+    return sustitution_node(graph, name)
+
+
 def run_main(file):
     data = {}
     graph = get_graph_from_file(file)
@@ -57,13 +60,12 @@ if __name__ == "__main__":
     save_graph(graph, graph_path)
     # cg = ConversationalGraph(book_path, graph_path)
     # dg = DistanceGraph(book_path, graph_path_distance, distance=100)
-
+    graph = load_graph(graph_path)
     # cg.build_graph()
-    # graph_measures.paint_communities(cg.graph)
-    # cg.save_graph()
     # dg.build_graph()
+    # cg.load_graph()
+    print(sustitution_node(graph, 'Dracula'))
     # dg.load_graph()
-
     # stars = main_characters(dg.graph)
     # stars = main_characters(cg.graph)
     # for m in stars:

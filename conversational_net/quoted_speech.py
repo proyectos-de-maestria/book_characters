@@ -6,14 +6,13 @@ import codecs
 
 
 class ConversationalGraph(GraphHelper):
-
     def __init__(self, book_path, graph_path):
         if not book_path.endswith(".txt"):
             book_path += ".txt"
         text = open(book_path, encoding="utf8").read()
         super().__init__(book_path, graph_path, text)
         self.conversation_names, self.no_talk_names = self.__talk_ntalk_names__()
-        self.build_graph()
+        # self.build_graph()
 
     def __talk_ntalk_names__(self):
         full_talks = split_in_pairs(self.text)

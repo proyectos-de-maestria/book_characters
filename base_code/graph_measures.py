@@ -29,18 +29,18 @@ def center(graph):
     return nx.algorithms.center(graph.subgraph(components))
 
 
-def paint_communities(graph):
+def paint_communities(graph, paint=True):
     communities = community.best_partition(graph)
-
-    size = float(len(set(communities.values())))
-    count = 0
-    for com in set(communities.values()):
-        count = count + 1.
-        list_nodes = [nodes for nodes in communities.keys()
-                      if communities[nodes] == com]
-        for node in list_nodes:
-            # graph.add_node(node, com_color=count/size)
-            graph.nodes[node]['color'] = count / size
+    if paint:
+        size = float(len(set(communities.values())))
+        count = 0
+        for com in set(communities.values()):
+            count = count + 1.
+            list_nodes = [nodes for nodes in communities.keys()
+                          if communities[nodes] == com]
+            for node in list_nodes:
+                # graph.add_node(node, com_color=count/size)
+                graph.nodes[node]['color'] = count / size
 
     return communities
 
