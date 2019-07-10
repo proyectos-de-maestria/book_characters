@@ -7,7 +7,9 @@ import codecs
 
 class ConversationalGraph(GraphHelper):
     def __init__(self, book_path, graph_path):
-        text = open(book_path + ".txt", encoding="utf8").read()
+        if not book_path.endswith(".txt"):
+            book_path += ".txt"
+        text = open(book_path, encoding="utf8").read()
         super().__init__(book_path, graph_path, text)
         self.conversation_names, self.no_talk_names = self.__talk_ntalk_names__()
         # self.build_graph()
@@ -59,10 +61,7 @@ class ConversationalGraph(GraphHelper):
 def get_graph(book_path, graph_path="graph"):
     if not book_path.endswith(".txt"):
         book_path += ".txt"
-    t = open(book_path, encoding="utf8")
-    rd = t.read()
-
-    return ConversationalGraph(rd, graph_path)
+    return ConversationalGraph(book_path, graph_path)
 
 
 def get_graph_from_file(file):
