@@ -1,3 +1,4 @@
 .idea
 ebooklib.pdf
 *.gml
+*.pyc

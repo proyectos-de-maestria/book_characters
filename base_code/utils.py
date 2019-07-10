@@ -35,6 +35,7 @@ def transform_evol_list_in_dict(main_evol):
 
 def bar_graph(data):
     if len(data.keys()):
+        fig_name = 'evol.png'
         start_x = 0
         for name in data.keys():
             x_list = [start_x + len(data.keys())*i for i in range(len(data[name]))]
@@ -52,4 +53,6 @@ def bar_graph(data):
         plt.ylabel('% de grado del nodo')
         plt.xlabel('evolución en el tiempo (las líneas negras son un nuevo segmento temporal)')
         plt.title("Evolución de los personajes")
-        plt.show()
+        plt.savefig(fig_name)
+        # plt.show()
+        return fig_name

@@ -45,7 +45,7 @@ class ConversationalGraph(GraphHelper):
     def build_evolution_graph(self):
         self.evol_graphs = []
 
-        times_to_build = len(self.conversation_names) // self.evol_number
+        times_to_build = len(self.conversation_names) // self.evol_number + 1           # avoiding zero
 
         graph = nx.Graph()
         for i in range(len(self.conversation_names)):
@@ -61,17 +61,20 @@ class ConversationalGraph(GraphHelper):
 def get_graph(book_path, graph_path="graph"):
     if not book_path.endswith(".txt"):
         book_path += ".txt"
-    return ConversationalGraph(book_path, graph_path)
+    graph = ConversationalGraph(book_path, graph_path)
+    graph.build_graph()
+    return graph
 
 
 def get_graph_from_file(file):
-    book_path = file.name
+    book_path = file.name.split("/")[-1]
     print(book_path)
     if file.name.endswith("epub"):
         save_text(book_path, file)
     else:
         filed = codecs.open(book_path, "w", "utf-8")
-        text = file.read().decode("utf-8")
+        text = file.read()
+        text = text if isinstance(text, str) else text.decode("utf-8")
         filed.write(text)
         filed.close()
     return get_graph(book_path)

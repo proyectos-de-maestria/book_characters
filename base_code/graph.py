@@ -100,7 +100,7 @@ def get_partitions(communities):
 def sustitution_node(graph, name):
     neighbors_name = [i for (i, j) in graph.adj[name].items( )]
     min = len(graph.node.keys( ))
-    result = ''
+    result = 'No hay'
     for node in graph.node.keys( ):
 
         neighbors_node = [i for (i, j) in graph.adj[node].items( )]
@@ -155,3 +155,7 @@ class GraphHelper:
 
     def load_graph(self):
         self.graph = load_graph(self.path)
+
+    def load_graph_as_file(self):
+        self.save_graph()
+        return open(self.path + ".gml", 'r')

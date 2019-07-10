@@ -40,11 +40,28 @@ def character_sustitution(graph, name):
     return sustitution_node(graph, name)
 
 
-def run_main(file):
+def run_main(file, grap_type='cv'):
     data = {}
-    graph = get_graph_from_file(file)
+
+    graph = get_graph_from_file(file) if grap_type == 'cv' \
+        else get_graph_from_file(file)      # TODO cambiar el else a distance_net
+
     stars = main_characters(graph.graph)
     data['stars'] = stars
+
+    sustitute = {}
+    for node in graph.graph.nodes():
+        sustitute[node] = character_sustitution(graph.graph, node)
+    data['all_sustitutes'] = sustitute
+
+    main_evol = build_evolution(graph, try_load=False)
+    evol_data = transform_evol_list_in_dict(main_evol)
+    p_name = bar_graph(evol_data)
+    fd = open(p_name, "r") if p_name is not None else None
+    data['evol'] = fd
+
+    data['graph_file'] = graph.load_graph_as_file()
+
     return data
 
 
@@ -52,19 +69,24 @@ if __name__ == "__main__":
     book = "Dracula"
     book = "pride and prejudice extract"
     book_path = "books/" + book
-    graphs_folder = "conversational_net/graphs/conv_"
-    graph_path = graphs_folder + book
-    graph_path_distance = "distance_net/graph" + book
-    graph = load_graph(graph_path)
-    graph_measures.paint_communities(graph)
-    save_graph(graph, graph_path)
-    # cg = ConversationalGraph(book_path, graph_path)
-    # dg = DistanceGraph(book_path, graph_path_distance, distance=100)
-    graph = load_graph(graph_path)
-    # cg.build_graph()
-    # dg.build_graph()
-    # cg.load_graph()
-    print(sustitution_node(graph, 'Dracula'))
+
+    file = codecs.open(book_path + ".txt", 'r', "utf-8")
+    b = run_main(file)
+    a = 0
+
+    # graphs_folder = "conversational_net/graphs/conv_"
+    # graph_path = graphs_folder + book
+    # graph_path_distance = "distance_net/graph" + book
+    # graph = load_graph(graph_path)
+    # graph_measures.paint_communities(graph)
+    # save_graph(graph, graph_path)
+    # # cg = ConversationalGraph(book_path, graph_path)
+    # # dg = DistanceGraph(book_path, graph_path_distance, distance=100)
+    # graph = load_graph(graph_path)
+    # # cg.build_graph()
+    # # dg.build_graph()
+    # # cg.load_graph()
+    # print(sustitution_node(graph, 'Dracula'))
     # dg.load_graph()
     # stars = main_characters(dg.graph)
     # stars = main_characters(cg.graph)
