@@ -50,7 +50,7 @@ def run_main(file):
 
 if __name__ == "__main__":
     book = "Dracula"
-    # book = "pride and prejudice extract"
+    book = "pride and prejudice extract"
     book_path = "books/" + book
     graphs_folder = "conversational_net/graphs/conv_"
     graph_path = graphs_folder + book
