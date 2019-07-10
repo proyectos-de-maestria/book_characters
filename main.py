@@ -13,7 +13,6 @@ from conversational_net.quoted_speech import *
 #     return get_distance_graph(book_path, graph_path, distance)
 
 
-
 def main_characters(graph):
     ord_degree = graph_measures.top_n_degree(graph)
     if len(ord_degree):
@@ -23,7 +22,7 @@ def main_characters(graph):
 
 
 def build_graph(graph_helper):
-    return graph_helper.build_graph()
+    return graph_helper.build_graph( )
 
 
 def build_evolution(graph_helper, try_load=True):
@@ -31,10 +30,14 @@ def build_evolution(graph_helper, try_load=True):
     if try_load and path.exists(filename):
         evol = list(pickled_items(filename))[0]["1"]
     else:
-        evol = graph_helper.build_evolution_graph()
+        evol = graph_helper.build_evolution_graph( )
 
         save_object(filename, {"1": evol})
     return [main_characters(x) for x in evol]
+
+
+def character_sustitution(graph, name):
+    return sustitution_node(graph, name)
 
 
 def run_main(file):
@@ -46,22 +49,28 @@ def run_main(file):
 
 
 if __name__ == "__main__":
-    book = "Dracula.epub"
+    book = "Dracula"
     # book = "pride and prejudice extract"
     book_path = "books/" + book
     graphs_folder = "conversational_net/graphs/conv_"
     graph_path = graphs_folder + book
     graph_path_distance = "distance_net/graph" + book
-    cg = ConversationalGraph(book_path, graph_path)
+    # cg = ConversationalGraph(book_path, graph_path)
     # dg = DistanceGraph(book_path, graph_path_distance, distance=100)
-
+    graph = load_graph(graph_path)
     # cg.build_graph()
     # dg.build_graph()
+    # cg.load_graph()
+    print(sustitution_node(graph, 'Dracula'))
     # dg.load_graph()
     # stars = main_characters(dg.graph)
     # for m in stars:
     #     print(m)
     # #
-    main_evol = build_evolution(cg)
-    data = transform_evol_list_in_dict(main_evol)
-    bar_graph(data)
+    # stars = main_characters(cg.graph)
+    # for m in stars:
+    #     print(m)
+    # #
+    # main_evol = build_evolution(cg)
+    # data = transform_evol_list_in_dict(main_evol)
+    # bar_graph(data)
