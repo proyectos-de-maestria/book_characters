@@ -10,7 +10,7 @@ def spacy_names(text):
         for i in range(step, len(text), step):
             doc = nlp(text[i - step:i])
             for entity in doc.ents:
-                if entity.label_ == 'PERSON' or entity.label_ == 'NORP':
+                if entity.label_ == 'PERSON':
                     res[entity.lemma_] = 1 + (1 if res.__contains__(entity.lemma_) else 0)
                 # print(entity.lemma_ + entity.label_)
     else:

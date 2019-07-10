@@ -47,22 +47,28 @@ def run_main(file):
 
 if __name__ == "__main__":
     book = "Dracula"
-    book = "pride and prejudice extract"
+    # book = "pride and prejudice extract"
     book_path = "books/" + book
     graphs_folder = "conversational_net/graphs/conv_"
     graph_path = graphs_folder + book
     graph_path_distance = "distance_net/graph" + book
-    cg = ConversationalGraph(book_path, graph_path)
+    graph = load_graph(graph_path)
+    graph_measures.paint_communities(graph)
+    save_graph(graph, graph_path)
+    # cg = ConversationalGraph(book_path, graph_path)
     # dg = DistanceGraph(book_path, graph_path_distance, distance=100)
 
     # cg.build_graph()
+    # graph_measures.paint_communities(cg.graph)
+    # cg.save_graph()
     # dg.build_graph()
     # dg.load_graph()
+
     # stars = main_characters(dg.graph)
-    stars = main_characters(cg.graph)
-    for m in stars:
-        print(m)
-    #
-    main_evol = build_evolution(cg)
-    data = transform_evol_list_in_dict(main_evol)
-    bar_graph(data)
+    # stars = main_characters(cg.graph)
+    # for m in stars:
+    #     print(m)
+    # #
+    # main_evol = build_evolution(cg)
+    # data = transform_evol_list_in_dict(main_evol)
+    # bar_graph(data)
