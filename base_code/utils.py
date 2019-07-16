@@ -1,5 +1,7 @@
 import pickle
 import matplotlib.pyplot as plt
+from scipy.sparse import csr_matrix
+from numpy import zeros
 
 
 def pickled_items(filename):
@@ -56,3 +58,62 @@ def bar_graph(data):
         plt.savefig(fig_name)
         # plt.show()
         return fig_name
+
+
+def from_DtoD(com):
+    res = {}
+    for r, v in com.items():
+        if v in res.keys():
+            res[v].append(r)
+        else:
+            res[v] = [r]
+    return res
+
+
+def get_closest_ady(ady_sorted, num):
+    if not len(ady_sorted):
+        print("lista de adyacencia vacia")
+        return -1, []
+    if len(ady_sorted) == 1:
+        return ady_sorted[0]
+    if len(ady_sorted) == 2:
+        return ady_sorted[0] if abs(len(ady_sorted[0][1]) - num) < abs(len(ady_sorted[1][1]) - num) else ady_sorted[1]
+    split_index = len(ady_sorted)//2
+    if abs(len(ady_sorted[split_index][1]) - num) < abs(len(ady_sorted[split_index + 1][1]) - num):
+        return get_closest_ady(ady_sorted[:split_index + 1], num)
+    else:
+        return get_closest_ady(ady_sorted[split_index + 1:], num)
+
+
+def hamming(matrix1, matrix2):
+    max_matrix = matrix2
+    min_matrix = matrix1
+    if len(matrix1) > len(matrix2):
+        max_matrix = matrix1
+        min_matrix = matrix2
+    z = zeros((len(max_matrix), len(max_matrix)))
+    z[:len(min_matrix), :len(min_matrix)] = min_matrix
+    # min_matrix = \
+    #     csr_matrix((min_matrix.data, min_matrix.indices, min_matrix.indptr))
+    return count_ones(abs(max_matrix - z))
+
+
+# def __aux_ham__(matrix1, matrix2):
+#     # len(matrix2) < len(matrix1)
+#     dif = 0
+#     for i, row in enumerate(matrix1):
+#         for j, elem in enumerate(row):
+#             if len(matrix2) > i and len(matrix2[i]) > j:
+#                 dif += abs(elem - matrix2[i][j])
+#             else:
+#                 dif += elem
+#     return dif
+
+
+def count_ones(matrix):
+    ones = 0
+    for row in matrix.A:
+        for elem in row:
+            if elem == 1:
+                ones += 1
+    return ones

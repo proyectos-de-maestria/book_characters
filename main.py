@@ -65,17 +65,33 @@ def run_main(file, grap_type='cv'):
     return data
 
 
+def similar_topic(gpath1, gpath2):
+    graph1 = load_graph(gpath1)
+    graph2 = load_graph(gpath2)
+    return get_similar_topics(graph1, graph2)
+
+
 if __name__ == "__main__":
     book = "Dracula"
-    book = "pride and prejudice extract"
+    # book = "pride and prejudice extract"
     book_path = "books/" + book
 
-    file = codecs.open(book_path + ".txt", 'r', "utf-8")
-    b = run_main(file)
-    a = 0
+    # file = codecs.open(book_path + ".txt", 'r', "utf-8")
+    # b = run_main(file)
+    # a = 0
 
-    # graphs_folder = "conversational_net/graphs/conv_"
-    # graph_path = graphs_folder + book
+    graphs_folder = "conversational_net/graphs/conv_"
+    graph_path = graphs_folder + book
+    graph_path2 = graphs_folder + "pride and prejudice"
+    a = similar_topic(graph_path, graph_path2)
+    if len(a):
+        for elem in a:
+            print(elem[0])
+            print(elem[1])
+            print("-----------------s")
+    else:
+        print("nada")
+
     # graph_path_distance = "distance_net/graph" + book
     # graph = load_graph(graph_path)
     # graph_measures.paint_communities(graph)
