@@ -1,7 +1,7 @@
 import pickle
 import matplotlib.pyplot as plt
-from scipy.sparse import csr_matrix
 from numpy import zeros
+import codecs
 
 
 def pickled_items(filename):
@@ -98,16 +98,12 @@ def hamming(matrix1, matrix2):
     return count_ones(abs(max_matrix - z))
 
 
-# def __aux_ham__(matrix1, matrix2):
-#     # len(matrix2) < len(matrix1)
-#     dif = 0
-#     for i, row in enumerate(matrix1):
-#         for j, elem in enumerate(row):
-#             if len(matrix2) > i and len(matrix2[i]) > j:
-#                 dif += abs(elem - matrix2[i][j])
-#             else:
-#                 dif += elem
-#     return dif
+def write_file(file, book_path):
+    filed = codecs.open(book_path, "w", "utf-8")
+    text = file.read()
+    text = text if isinstance(text, str) else text.decode("utf-8")
+    filed.write(text)
+    filed.close()
 
 
 def count_ones(matrix):
