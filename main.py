@@ -66,25 +66,28 @@ def run_main(file, grap_type='cv'):
 
 
 if __name__ == "__main__":
-    book = "Dracula"
-    book = "pride and prejudice extract"
+    book = "Dracula.epub"
+    # book = "pride and prejudice extract"
     book_path = "books/" + book
 
-    file = codecs.open(book_path + ".txt", 'r', "utf-8")
-    b = run_main(file)
-    a = 0
+    # file = codecs.open(book_path + ".txt", 'r', "utf-8")
+    # b = run_main(file)
+    # a = 0
+    #
 
-    # graphs_folder = "conversational_net/graphs/conv_"
-    # graph_path = graphs_folder + book
+
+    graphs_folder = "conversational_net/graphs/distance_"
+    graph_path = graphs_folder + book
     # graph_path_distance = "distance_net/graph" + book
     # graph = load_graph(graph_path)
     # graph_measures.paint_communities(graph)
     # save_graph(graph, graph_path)
     # # cg = ConversationalGraph(book_path, graph_path)
-    # # dg = DistanceGraph(book_path, graph_path_distance, distance=100)
-    # graph = load_graph(graph_path)
+    # dg = DistanceGraph(book_path, graph_path, distance=15)
+    graph = load_graph(graph_path)
+    print('a')
     # # cg.build_graph()
-    # # dg.build_graph()
+    # dg.build_graph()
     # # cg.load_graph()
     # print(sustitution_node(graph, 'Dracula'))
     # dg.load_graph()

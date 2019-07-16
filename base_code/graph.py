@@ -39,19 +39,22 @@ def connect_n_to_nodes(graph, nodes, n):
         graph.add_edges_from(edges, color='red')
 
 
-def add_nodes_by_distance(graph, nodes, node):
+def add_nodes_by_distance(graph, nodes, node, classiffication):
     nodes[node] = 1
     nodes = Counter(nodes)
 
     names = nodes.keys( )
-    edges = [(node, x, 1 + graph.edges[node, x]['weight']) if graph.has_edge(node, x) else (node, x, 1) for x in names
-             if node != x]
+    edges = [(node, x, {'weight': 1 + graph.edges[node, x]['weight'], 'class': classiffication + graph.edges[node, x]['class']})
+             if graph.has_edge(node, x) else (node, x,  {'weight': 1, 'class': classiffication})
+             for x in names if node != x]
     if len(edges):
         for name, count in nodes.items( ):
             node_count = (graph.node[name]['count'] if name in graph else 0) + count
             graph.add_node(name, count=node_count)
 
-    graph.add_weighted_edges_from(edges)
+    graph.update(edges=edges)
+    # graph.add_weighted_edges_from(edges)
+
 
 
 def get_common_neighbors(node_a, node_b, graph):
@@ -115,8 +118,17 @@ def sustitution_node(graph, name):
 
 
 def relation_types(graph):
-    pass
+    relations = {}
 
+    for (u, v, d) in graph.edges(data='weight'):
+        relations[u] = d if u not in relations.keys() else relations[u] + d
+        relations[v] = d if v not in relations.keys() else relations[v] + d
+
+
+    for (u, v, d) in graph.edges(data='weight'):
+        relation_value = d/(relations[u]+relations[v])
+        # if relation_value > 0.4:
+        print(u, 'related with', v, relation_value)
 
 
 def get_similar_topics(graph_1, graph_2):
@@ -128,7 +140,7 @@ def save_graph(graph, name):
 
 
 def load_graph(name):
-    return gml.read_gml(name + ".gml")
+        return gml.read_gml(name + ".gml")
 
 
 class GraphHelper:
@@ -157,5 +169,5 @@ class GraphHelper:
         self.graph = load_graph(self.path)
 
     def load_graph_as_file(self):
-        self.save_graph()
+        self.save_graph( )
         return open(self.path + ".gml", 'r')

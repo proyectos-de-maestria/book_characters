@@ -1,4 +1,4 @@
-from base_code.preprocessing import get_names_by_chapters, names_in_text
+from base_code.preprocessing import get_names_by_chapters, names_in_text, get_sentiment_classification
 from base_code.graph import *
 from text_segmentation import epub_utils
 from ebooklib import epub
@@ -25,9 +25,10 @@ class DistanceGraph(GraphHelper):
                 portion_text = " ".join(chapter_content[name_index:].split( )[:self.distance])
                 index = name_index - self.distance if name_index - self.distance > 0 else 0
                 better_portion = " ".join(chapter_content[index:].split()[:self.distance])
+                classification = get_sentiment_classification(better_portion)
                 names_in_portion = names_in_text(portion_text)
                 names_correct = self.correferent.remove_correferents(names_in_portion, better_portion)
-                distance_partition.append((name, names_correct))
+                distance_partition.append((name, names_correct, classification))
         return distance_partition
 
     def build_evolution_graph(self):
@@ -36,7 +37,7 @@ class DistanceGraph(GraphHelper):
         graph = nx.Graph( )
 
         for i in range(len(self.distance_partition)):
-            add_nodes_by_distance(graph, self.distance_partition[i][1], self.distance_partition[i][0])
+            add_nodes_by_distance(graph, self.distance_partition[i][1], self.distance_partition[i][0], self.distance_partition[i][2])
             if i % times_to_build == 0 and i != 0:
                 self.evol_graphs.append(graph.copy( ))
         self.evol_graphs.append(graph.copy( ))
@@ -46,8 +47,8 @@ class DistanceGraph(GraphHelper):
     def build_graph(self):
         self.graph = nx.Graph( )
         names_to_add = self.__get_names_by_portion__()
-        for name, names_correct in names_to_add:
-            add_nodes_by_distance(self.graph, names_correct, name)
+        for name, names_correct, classification in names_to_add:
+            add_nodes_by_distance(self.graph, names_correct, name,classification)
         self.save_graph()
         return self.graph
 
