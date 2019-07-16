@@ -2,6 +2,7 @@ import pickle
 import matplotlib.pyplot as plt
 from numpy import zeros
 import codecs
+import base64
 
 
 def pickled_items(filename):
@@ -99,10 +100,12 @@ def hamming(matrix1, matrix2):
 
 
 def write_file(file, book_path):
-    filed = codecs.open(book_path, "w", "utf-8")
-    text = file.read()
-    text = text if isinstance(text, str) else text.decode("utf-8")
-    filed.write(text)
+    filed = codecs.open(book_path, "w")
+    base64.decode(file, filed)
+    # text = file.read()
+    # text = text if isinstance(text, str) else base64.de text.decode("utf-8")
+    # filed.write(text)
+    print(file.read())
     filed.close()
 
 

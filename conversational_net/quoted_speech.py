@@ -71,8 +71,8 @@ def get_graph_from_file(file):
     book_path = file.name.split("/")[-1]
     print(book_path)
     if file.name.endswith("epub"):
-        # write_file(file, book_path)
-        epub.write_epub(book_path, file)
+        write_file(file, book_path)
+        # epub.write_epub(book_path, file)
         file = epub.read_epub(book_path)
         save_text(book_path, file)
     else:
