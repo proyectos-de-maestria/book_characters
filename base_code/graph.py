@@ -155,11 +155,15 @@ def get_similar_topics(graph_1, graph_2):
 
 
 def save_graph(graph, name):
-    gml.write_gml(graph, name + ".gml")
+    if not name.endswith(".gml"):
+        name += ".gml"
+    gml.write_gml(graph, name)
 
 
 def load_graph(name):
-    return gml.read_gml(name + ".gml")
+    if not name.endswith(".gml"):
+        name += ".gml"
+    return gml.read_gml(name)
 
 
 class GraphHelper:
