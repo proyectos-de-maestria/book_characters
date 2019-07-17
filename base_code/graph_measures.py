@@ -2,8 +2,6 @@ import networkx as nx
 from operator import itemgetter
 import community
 
-from base_code.graph import load_graph, save_graph
-
 
 def top_n_degree(graph, n=10):
     degree_dict = dict(graph.degree(graph.nodes()))
@@ -43,29 +41,3 @@ def paint_communities(graph, paint=True):
                 graph.nodes[node]['color'] = count / size
 
     return communities
-
-
-if __name__ == '__main__':
-    graph_name = "Dracula.epub"
-    graph = load_graph("../books/" + graph_name)
-    graph = graph.to_undirected()
-    print("Top 10 nodes by degree:")
-    for n in top_n_degree(graph):
-        print(n)
-
-    print("------------------------------------------------------")
-    print("Top 10 nodes by eigenvector centrality:")
-    for n in top_n_evcentrality(graph):
-        print(n)
-
-    print("------------------------------------------------------")
-    print("Top 10 nodes by betweenness centrality:")
-    for n in top_n_betweenness(graph):
-        print(n)
-
-    print("------------------------------------------------------")
-    for n in center(graph):
-        print(n)
-
-    paint_communities(graph)
-    save_graph(graph, "test")

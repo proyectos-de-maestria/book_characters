@@ -6,6 +6,8 @@ from networkx.algorithms import community
 import community
 
 from base_code.correferents import Correferents
+from base_code.graph_measures import paint_communities
+from base_code.utils import from_DtoD, get_closest_ady, hamming, count_ones
 
 
 def add_kn(graph, nodes):
@@ -44,8 +46,9 @@ def add_nodes_by_distance(graph, nodes, node, classiffication):
     nodes = Counter(nodes)
 
     names = nodes.keys( )
-    edges = [(node, x, {'weight': 1 + graph.edges[node, x]['weight'], 'class': classiffication + graph.edges[node, x]['class']})
-             if graph.has_edge(node, x) else (node, x,  {'weight': 1, 'class': classiffication})
+    edges = [(node, x,
+              {'weight': 1 + graph.edges[node, x]['weight'], 'class': classiffication + graph.edges[node, x]['class']})
+             if graph.has_edge(node, x) else (node, x, {'weight': 1, 'class': classiffication})
              for x in names if node != x]
     if len(edges):
         for name, count in nodes.items( ):
@@ -54,7 +57,6 @@ def add_nodes_by_distance(graph, nodes, node, classiffication):
 
     graph.update(edges=edges)
     # graph.add_weighted_edges_from(edges)
-
 
 
 def get_common_neighbors(node_a, node_b, graph):
@@ -117,22 +119,39 @@ def sustitution_node(graph, name):
     return result
 
 
-def relation_types(graph):
-    relations = {}
-
-    for (u, v, d) in graph.edges(data='weight'):
-        relations[u] = d if u not in relations.keys() else relations[u] + d
-        relations[v] = d if v not in relations.keys() else relations[v] + d
-
-
-    for (u, v, d) in graph.edges(data='weight'):
-        relation_value = d/(relations[u]+relations[v])
-        # if relation_value > 0.4:
-        print(u, 'related with', v, relation_value)
+def get_relation_type(graph, node_a, node_b):
+    return graph.edges[node_a, node_b]['class']
 
 
 def get_similar_topics(graph_1, graph_2):
-    pass
+    c1 = paint_communities(graph_1, paint=False)
+    c2 = paint_communities(graph_2, paint=False)
+
+    com1 = from_DtoD(c1)
+    com2 = from_DtoD(c2)
+
+    # compute adjacency matrix to all communities in the first graph
+    all_ady_mtrx = []
+    for k, v in com1.items( ):
+        A = nx.adjacency_matrix(graph_1, v)
+        # print(A.todense())
+        all_ady_mtrx.append((k, A.todense( )))
+        # print("----------------------------")
+    all_ady_mtrx.sort(key=lambda elem: len(elem[1]))
+    # print(all_ady_mtrx)
+
+    best_com_pairs = []
+    for k, v in com2.items( ):
+        A = nx.adjacency_matrix(graph_2, v)
+        A = A.todense( )
+        best_c, best_ady = get_closest_ady(all_ady_mtrx, len(A))
+        # print(k, best_c)
+        dist = hamming(best_ady, A)
+        max_edges = count_ones(A) + count_ones(best_ady)
+        if dist / max_edges <= 0.6:
+            best_com_pairs.append((com2[k], com1[best_c]))
+        # print("----------------------------")
+    return best_com_pairs
 
 
 def save_graph(graph, name):
@@ -140,7 +159,7 @@ def save_graph(graph, name):
 
 
 def load_graph(name):
-        return gml.read_gml(name + ".gml")
+    return gml.read_gml(name + ".gml")
 
 
 class GraphHelper:
