@@ -55,6 +55,10 @@ def main():
                         else:
                             graph = DistanceGraph(book_path, 'distance_net/graph' + book_without_extension, distance=15)
                     else:
+                        if book_path.endswith(".epub"):
+                            file = epub.read_epub(book_path)
+                            save_text(book_path, file)
+                            book_path = book_path.replace(".epub", ".txt")
                         graph = ConversationalGraph(book_path,
                                                     'conversational_net/graphs/conv_' + book_without_extension)
                     build_graph(graph)

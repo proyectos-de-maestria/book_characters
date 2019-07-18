@@ -11,15 +11,18 @@ from base_code.graph_measures import paint_communities
 from base_code.utils import from_DtoD, get_closest_ady, hamming, count_ones
 
 
-def add_kn(graph, nodes):
+def add_kn(graph, nodes, sentiment):
     nodes = Counter(nodes)
-    if len(nodes.keys( )) > 1:
+    if len(nodes.keys()) > 1:
         add_nodes_to_graph(nodes, graph)
 
-        names = nodes.keys( )
-        edges_kn = [(x, y) for x in names for y in names if x != y]
+        names = nodes.keys()
+        edges_kn = [(x, y,
+                  {'weight': 1 + graph.edges[x, y]['weight'], 'class': sentiment + graph.edges[x, y]['class']})
+                 if graph.has_edge(x, y) else (x, y, {'weight': 1, 'class': sentiment}) for x in names for y in names if x != y]
 
-        graph.add_edges_from(edges_kn, color='red')
+        # graph.add_edges_from(edges_kn, color='red')
+        graph.update(edges=edges_kn)
 
 
 def add_nodes_to_graph(nodes, graph):

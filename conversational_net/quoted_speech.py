@@ -38,8 +38,8 @@ class ConversationalGraph(GraphHelper):
 
     def build_graph(self):
         self.graph = nx.Graph()
-        for names in self.no_talk_names:
-            add_kn(self.graph, names)
+        for i, names in enumerate(self.no_talk_names):
+            add_kn(self.graph, names, self.sentiments[i])
         for i in range(len(self.conversation_names)):
             for name in self.conversation_names[i]:
                 connect_n_to_nodes(self.graph, self.no_talk_names[i], name, self.sentiments[i])
