@@ -39,5 +39,6 @@ def paint_communities(graph, paint=True):
             for node in list_nodes:
                 # graph.add_node(node, com_color=count/size)
                 graph.nodes[node]['color'] = count / size
+                graph.nodes[node]['community'] = com
 
     return communities

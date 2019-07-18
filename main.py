@@ -1,16 +1,9 @@
 from os import path
+
 from base_code import graph_measures
 from base_code.utils import *
 from distance_net.distance_graph import *
 from conversational_net.quoted_speech import *
-
-
-# def build_conversational_graph(book_path, graph_path, distance):
-#     return get_graph(book_path, graph_path)
-#
-#
-# def build_distance_graph(book_path, graph_path, distance ):
-#     return get_distance_graph(book_path, graph_path, distance)
 
 
 def main_characters(graph):
@@ -22,11 +15,12 @@ def main_characters(graph):
 
 
 def build_graph(graph_helper):
-    return graph_helper.build_graph()
+    if graph_helper:
+        return graph_helper.build_graph()
 
 
 def build_evolution(graph_helper, try_load=True):
-    filename = 'evol_graph.pkl'
+    filename = graph_helper.path + 'evol.pkl'
     if try_load and path.exists(filename):
         evol = list(pickled_items(filename))[0]["1"]
     else:
@@ -40,57 +34,113 @@ def character_sustitution(graph, name):
     return sustitution_node(graph, name)
 
 
-def run_main(file, grap_type='cv'):
-    data = {}
-
-    graph = get_graph_from_file(file) if grap_type == 'cv' \
-        else get_graph_from_file(file)      # TODO cambiar el else a distance_net
-
-    stars = main_characters(graph.graph)
-    data['stars'] = stars
-
-    sustitute = {}
-    for node in graph.graph.nodes():
-        sustitute[node] = character_sustitution(graph.graph, node)
-    data['all_sustitutes'] = sustitute
-
-    main_evol = build_evolution(graph, try_load=False)
-    evol_data = transform_evol_list_in_dict(main_evol)
-    p_name = bar_graph(evol_data)
-    fd = open(p_name, "r") if p_name is not None else None
-    data['evol'] = fd
-
-    data['graph_file'] = graph.load_graph_as_file()
-
-    return data
-
-
-def similar_topic(gpath1, gpath2):
-    graph1 = load_graph(gpath1)
-    graph2 = load_graph(gpath2)
-    return get_similar_topics(graph1, graph2)
+def main():
+    print("Introduzca los comandos de consulta:")
+    graph = None
+    while True:
+        print()
+        str_comando = input(">> ")
+        comando = str_comando.split(' ')
+        if len(comando):
+            if comando[0] == "book" and len(comando) > 1:
+                book_path = text_in_fquote(str_comando)
+                if path.exists(book_path):
+                    print("inicializando datos...")
+                    book_without_extension = ''.join(path.split(book_path)[1].split('.')[:-1])
+                    print(book_without_extension)
+                    if len(comando) > 2 and comando[-1] == "dist":
+                        if not book_path.endswith(".epub"):
+                            print("para el grafo de distancias es necesario un epub")
+                            graph = None
+                        else:
+                            graph = DistanceGraph(book_path, 'distance_net/graph' + book_without_extension, distance=15)
+                    else:
+                        graph = ConversationalGraph(book_path,
+                                                    'conversational_net/graphs/conv_' + book_without_extension)
+                    build_graph(graph)
+                else:
+                    print("archivo no encontrado")
+            elif comando[0] == "exit":
+                break
+            elif comando[0] == "help":
+                ayuda()
+            elif graph:
+                if comando[0] == "stars":
+                    stars = main_characters(graph.graph)
+                    if len(comando) > 1:
+                        if comando[1] == 'pr':      # page rank
+                            pass        # TODO
+                        if comando[1] == 'center':
+                            stars = graph_measures.center(graph.graph)
+                        if comando[1] == 'btwn':
+                            stars = graph_measures.top_n_betweenness(graph.graph)
+                            stars = [s for s, v in stars if v > 0.5]
+                    for star in stars:
+                        print(star)
+                elif comando[0] == 'evol':
+                    main_evol = build_evolution(graph)
+                    data = transform_evol_list_in_dict(main_evol)
+                    bar_graph(data)
+                elif comando[0] == 'cluster':
+                    paint_communities(graph.graph)
+                    graph.save_graph()
+                    print("guardado el grafo con las comunidades en " + graph.path + ".gml")
+                elif comando[0] == 'sustituir':
+                    while True:
+                        print("-- elegir personaje:")
+                        per = input("-- ")
+                        if per == 'exit':
+                            break
+                        if per in graph.graph.nodes():
+                            print("sustituto de {0} -> {1}".format(per, character_sustitution(graph.graph, per)))
+                        else:
+                            pos = [x for x in graph.graph.nodes() if x.startswith(per) or x.lower().startswith(per)]
+                            if len(pos):
+                                print("quizas quisiste decir: " + str(pos))
+                elif comando[0] == "salvar":
+                    graph.save_graph()
+                elif comando[0] == "relacion":
+                    # TODO no tengo esto get_relation_type()
+                    pass
+                elif comando[0] == "tramas":
+                    graph_path = text_in_fquote(str_comando)
+                    if path.exists(graph_path) and graph_path.endswith(".gml"):
+                        book2 = load_graph(graph_path)
+                        sim_topics = get_similar_topics(graph.graph, book2)
+                        for i, (g1, g2) in enumerate(sim_topics):
+                            save_graph(g1, "{0}result1.gml".format(i))
+                            save_graph(g2, "{0}result2.gml".format(i))
+                            print("salvados resultados para trama {0}".format(i))
+                    else:
+                        print("archivo no encontrado. Debe tener extension gml")
+            else:
+                print("se debe cargar primero un libro con el comando book <path>")
 
 
 if __name__ == "__main__":
-    book = "Dracula"
-    # book = "pride and prejudice extract"
-    book_path = "books/" + book
+    main()
+    test = "books/pride and prejudice extract.txt"
+    trama = "conversational_net/graphs/conv_Dracula.gml"
+    # print(path.exists(test))
+    # book = "Dracula"
+    # # book = "pride and prejudice extract"
+    # book_path = "books/" + book
 
     # file = codecs.open(book_path + ".txt", 'r', "utf-8")
     # b = run_main(file)
     # a = 0
 
-    graphs_folder = "conversational_net/graphs/conv_"
-    graph_path = graphs_folder + book
-    graph_path2 = graphs_folder + "pride and prejudice"
-    a = similar_topic(graph_path, graph_path2)
-    if len(a):
-        for elem in a:
-            print(elem[0])
-            print(elem[1])
-            print("-----------------s")
-    else:
-        print("nada")
+    # graphs_folder = "conversational_net/graphs/conv_"
+    # graph_path = graphs_folder + book
+    # graph_path2 = graphs_folder + "pride and prejudice"
+    # a = similar_topic(graph_path, graph_path2)
+    # if len(a):
+    #     for elem in a:
+    #         print(elem[0])
+    #         print(elem[1])
+    #         print("-----------------s")
+    # else:
+    #     print("nada")
 
     # graph_path_distance = "distance_net/graph" + book
     # graph = load_graph(graph_path)
