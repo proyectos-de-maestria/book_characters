@@ -53,13 +53,20 @@ def main():
                             print("para el grafo de distancias es necesario un epub")
                             graph = None
                         else:
-                            graph = DistanceGraph(book_path, 'distance_net/graph' + book_without_extension, distance=15)
+                            graph = DistanceGraph(book_path, 'distance_net/graph' + book_without_extension, distance=100)
                     else:
                         graph = ConversationalGraph(book_path,
                                                     'conversational_net/graphs/conv_' + book_without_extension)
                     build_graph(graph)
                 else:
                     print("archivo no encontrado")
+            elif comando[0] == "load" and len(comando) > 1:
+                book_path = text_in_fquote(str_comando)
+                if path.exists(book_path):
+                    print("cargando grafo...")
+                    graph = GraphHelper("", "", "")
+                    graph.graph = load_graph(book_path)
+
             elif comando[0] == "exit":
                 break
             elif comando[0] == "help":

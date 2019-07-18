@@ -105,11 +105,10 @@ def get_partitions(communities):
 
 def sustitution_node(graph, name):
     neighbors_name = [i for (i, j) in graph.adj[name].items( )]
-    min = len(graph.node.keys( ))
+    min = len(graph.node.keys())
     result = 'No hay'
-    for node in graph.node.keys( ):
-
-        neighbors_node = [i for (i, j) in graph.adj[node].items( )]
+    for node in graph.node.keys():
+        neighbors_node = [i for (i, j) in graph.adj[node].items()]
         dif = [a for a in neighbors_name if a not in neighbors_node]
         dif.extend([a for a in neighbors_node if a not in neighbors_name])
         neighbors_node.extend(neighbors_name)
@@ -121,7 +120,10 @@ def sustitution_node(graph, name):
 
 
 def get_relation_type(graph, node_a, node_b):
-    return graph.edges[node_a, node_b]['class']
+    if graph.has_edge(node_a,node_b):
+        return graph.edges[node_a, node_b]['class']
+    else:
+        return "No existe relacion entre estos personajes"
 
 
 def get_similar_topics(graph_1, graph_2):

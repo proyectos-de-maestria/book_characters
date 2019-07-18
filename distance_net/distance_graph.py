@@ -27,10 +27,8 @@ class DistanceGraph(GraphHelper):
                 better_portion = " ".join(chapter_content[index:].split()[:self.distance])
                 classification = get_sentiment_classification(better_portion)
                 names_in_portion = names_in_text(portion_text)
-                name = self.correferent.remove_correferents({name: 1}, better_portion)
-                if name:
-                    names_correct = self.correferent.remove_correferents(names_in_portion, better_portion)
-                    distance_partition.append((name, names_correct, classification))
+                names_correct = self.correferent.remove_correferents(names_in_portion, better_portion)
+                distance_partition.append((name, names_correct, classification))
         return distance_partition
 
     def build_evolution_graph(self):
