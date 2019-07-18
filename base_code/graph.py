@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from collections import Counter
 from networkx.algorithms import community
 import community
+import numpy as np
 
 from base_code.correferents import Correferents
 from base_code.graph_measures import paint_communities
@@ -130,27 +131,42 @@ def get_similar_topics(graph_1, graph_2):
     com1 = from_DtoD(c1)
     com2 = from_DtoD(c2)
 
-    # compute adjacency matrix to all communities in the first graph
-    all_ady_mtrx = []
-    for k, v in com1.items( ):
-        A = nx.adjacency_matrix(graph_1, v)
-        # print(A.todense())
-        all_ady_mtrx.append((k, A.todense( )))
-        # print("----------------------------")
-    all_ady_mtrx.sort(key=lambda elem: len(elem[1]))
-    # print(all_ady_mtrx)
+    # solo para grafos dirigidos
+    triads1 = [(c, nx.triadic_census(graph_1.subgraph(com1[c]).to_directed()).values())
+               for c in com1.keys()]
+    triads2 = [(c, nx.triadic_census(graph_2.subgraph(com2[c]).to_directed()).values())
+               for c in com2.keys()]
 
     best_com_pairs = []
-    for k, v in com2.items( ):
-        A = nx.adjacency_matrix(graph_2, v)
-        A = A.todense( )
-        best_c, best_ady = get_closest_ady(all_ady_mtrx, len(A))
-        # print(k, best_c)
-        dist = hamming(best_ady, A)
-        max_edges = count_ones(A) + count_ones(best_ady)
-        if dist / max_edges <= 0.6:
-            best_com_pairs.append((com2[k], com1[best_c]))
-        # print("----------------------------")
+    for c, vector in triads1:
+        nparray = np.array(list(vector))
+        suma = nparray.sum()
+        aux = [(k, abs(nparray-np.array(list(v2))).sum(), suma + np.array(list(v2)).sum()) for k, v2 in triads2]
+        aux = [(graph_1.subgraph(com1[c]), graph_2.subgraph(com2[k]))
+               for k, v, s in aux if (s != 0 and v/s <= 0.5) or s == 0]
+        best_com_pairs.extend(aux)
+
+    # compute adjacency matrix to all communities in the first graph
+    # all_ady_mtrx = []
+    # for k, v in com1.items():
+    #     A = nx.adjacency_matrix(graph_1, v)
+    #     # print(A.todense())
+    #     all_ady_mtrx.append((k, A.todense()))
+    #     # print("----------------------------")
+    # all_ady_mtrx.sort(key=lambda elem: len(elem[1]))
+    # # print(all_ady_mtrx)
+    #
+    # best_com_pairs = []
+    # for k, v in com2.items():
+    #     A = nx.adjacency_matrix(graph_2, v)
+    #     A = A.todense()
+    #     best_c, best_ady = get_closest_ady(all_ady_mtrx, len(A))
+    #     # print(k, best_c)
+    #     dist = hamming(best_ady, A)
+    #     max_edges = count_ones(A) + count_ones(best_ady)
+    #     if dist / max_edges <= 0.6:
+    #         best_com_pairs.append((graph_2.subgraph(com2[k]), graph_1.subgraph(com1[best_c])))
+    #     # print("----------------------------")
     return best_com_pairs
 
 
@@ -192,5 +208,5 @@ class GraphHelper:
         self.graph = load_graph(self.path)
 
     def load_graph_as_file(self):
-        self.save_graph( )
+        self.save_graph()
         return open(self.path + ".gml", 'r')

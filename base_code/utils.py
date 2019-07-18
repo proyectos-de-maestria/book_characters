@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from numpy import zeros
 import codecs
 import base64
+import re
 
 
 def pickled_items(filename):
@@ -57,7 +58,7 @@ def bar_graph(data):
         plt.xlabel('evolución en el tiempo (las líneas negras son un nuevo segmento temporal)')
         plt.title("Evolución de los personajes")
         plt.savefig(fig_name)
-        # plt.show()
+        plt.show()
         return fig_name
 
 
@@ -116,3 +117,39 @@ def count_ones(matrix):
             if elem == 1:
                 ones += 1
     return ones
+
+
+def text_in_fquote(text):
+    book_path = re.search("\"[^\"]*\"", text)
+    if book_path:
+        index = book_path.span()
+        book_path = text[index[0] + 1:index[1] - 1]
+    return book_path if book_path else "-"
+
+
+def ayuda():
+    print("inicializar los datos del libro usando el comando book <path>")
+    print("<path> puede ser un path absoluto o relativo al proyecto. Debe ir entre comillas dobles.")
+    print()
+    print("se pueden consultar los datos del libro a traves de los comandos stars, evol, ")
+    print("cluster, sustituir, relacion, tramas. Ademas, se puede guardar el gml del grafo ")
+    print("haciendo uso del comando salvar. Para finalizar la ejecucion del programa, escribir exit.")
+    print()
+    print("-- stars: puede recibir como parametro el criterio para elegir los personajes principales. ")
+    print("Por defecto, se calcula usando los grados de cada nodo. Parametros: ")
+    print("<center> (centros del grafo),")
+    print("<btwn> (betweenness de los nodos)")
+    print()
+    print("-- evol: calcula la evolucion de los personajes principales y muestra un grafico de barra con la progresion")
+    print()
+    print("-- cluster: agrega a los nodos del grafo un parametro community. El grafo se guarda en una direccion ")
+    print("que se muestra y luego puede ser analizado haciendo uso de softwares como Gephi")
+    print()
+    print("-- sustituir: entra un nuevo prompt donde se espera el nombre de un personaje. Para cada entrada ")
+    print("se computa su posible sustituto en la historia. Se puede volver al prompt original escribiendo exit")
+    print()
+    print("-- relacion: ")
+    print()
+    print("-- tramas: recibe como parametro la ruta de un archivo gml entre comillas. La extension debe estar ")
+    print("inlcuida en el nombre. Calcula las tramas similares y guarda los resultados en archivos para su ")
+    print("posterior analisis en Gephi.")
