@@ -1,11 +1,13 @@
 import en_core_web_sm
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 
 def spacy_names(text):
     res = {}
     step = 1000000
     if len(text) > step:
-        nlp = en_core_web_sm.load()
+        nlp = en_core_web_sm.load( )
 
         for i in range(step, len(text), step):
             doc = nlp(text[i - step:i])
@@ -29,9 +31,27 @@ def get_names_in_doc(doc):
     return res
 
 
+def get_sentiment_classification(text):
+    sentences = nltk.sent_tokenize(text)
+    sid = SentimentIntensityAnalyzer( )
+    sentiment = 0
+    for sentence in sentences:
+        ss = sid.polarity_scores(sentence)
+        maxi = max(ss.values())
+        if ss['pos'] and ss['pos'] == maxi:
+            sentiment += 1
+        elif ss['neg'] and ss['neg'] == maxi:
+            sentiment -= 1
+    if sentiment:
+        return 1 if sentiment > 0 else -1
+    else:
+        return sentiment
+
+
+
 def names_in_text(text):
     # text = text.replace('\n', '')
-    nlp = en_core_web_sm.load()
+    nlp = en_core_web_sm.load( )
     doc = nlp(text)
     # get all possible names
     pos_names = get_names_in_doc(doc)
@@ -49,3 +69,4 @@ def get_names_by_chapters(chapters):
         names = names_in_text(chapters[ch])
         names_in_chapters[ch] = names
     return names_in_chapters
+

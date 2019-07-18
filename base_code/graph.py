@@ -42,19 +42,22 @@ def connect_n_to_nodes(graph, nodes, n):
         graph.add_edges_from(edges, color='red')
 
 
-def add_nodes_by_distance(graph, nodes, node):
+def add_nodes_by_distance(graph, nodes, node, classiffication):
     nodes[node] = 1
     nodes = Counter(nodes)
 
     names = nodes.keys( )
-    edges = [(node, x, 1 + graph.edges[node, x]['weight']) if graph.has_edge(node, x) else (node, x, 1) for x in names
-             if node != x]
+    edges = [(node, x,
+              {'weight': 1 + graph.edges[node, x]['weight'], 'class': classiffication + graph.edges[node, x]['class']})
+             if graph.has_edge(node, x) else (node, x, {'weight': 1, 'class': classiffication})
+             for x in names if node != x]
     if len(edges):
         for name, count in nodes.items( ):
             node_count = (graph.node[name]['count'] if name in graph else 0) + count
             graph.add_node(name, count=node_count)
 
-    graph.add_weighted_edges_from(edges)
+    graph.update(edges=edges)
+    # graph.add_weighted_edges_from(edges)
 
 
 def get_common_neighbors(node_a, node_b, graph):
@@ -117,8 +120,8 @@ def sustitution_node(graph, name):
     return result
 
 
-def relation_types(graph):
-    pass
+def get_relation_type(graph, node_a, node_b):
+    return graph.edges[node_a, node_b]['class']
 
 
 def get_similar_topics(graph_1, graph_2):
