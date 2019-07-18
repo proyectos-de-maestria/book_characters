@@ -1,4 +1,5 @@
 import re
+from base_code.preprocessing import get_sentiment_classification
 
 
 def split_in_quotes(text):
@@ -76,14 +77,18 @@ def split_in_pairs(text):
     sentences = get_sentences_before_quote(text, quotes)
     before = ""
     quote = ""
+    full_conversation = ""
     for sentence in sentences:
         if sentence["before"] != "":
             before += sentence["before"] + "\n"
         quote += sentence["quote"] + "\n"
+        full_conversation += sentence["before"] + "\n" + sentence["quote"] + "\n"
         if sentence["after"] == -1:  # to much space between two consecutive quotes
-            res.append((quote, before))
+            classification = get_sentiment_classification(full_conversation)
+            res.append((quote, before, classification))
             before = ""
             quote = ""
+            full_conversation = ""
     return res
 
 

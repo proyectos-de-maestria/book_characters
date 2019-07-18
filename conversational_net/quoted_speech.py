@@ -12,7 +12,7 @@ class ConversationalGraph(GraphHelper):
             book_path += ".txt"
         text = open(book_path, encoding="utf8").read()
         super().__init__(book_path, graph_path, text)
-        self.conversation_names, self.no_talk_names = self.__talk_ntalk_names__()
+        self.conversation_names, self.no_talk_names, self.sentiments = self.__talk_ntalk_names__()
         # self.build_graph()
 
     def __talk_ntalk_names__(self):
@@ -22,7 +22,9 @@ class ConversationalGraph(GraphHelper):
         # names that are mentioned out of the conversation.
         # These most be the ones involved in th dialog.
         no_talk_names = []
-        for talk, no_talk in full_talks:
+        # sentiment in conversation
+        sentiments = []
+        for talk, no_talk, sentiment in full_talks:
             tn = names_in_text(talk)
             ntn = names_in_text(no_talk)
             all_names = list(tn.keys())
@@ -31,7 +33,8 @@ class ConversationalGraph(GraphHelper):
             scn = self.correferent.remove_correferents(ntn, all_names)
             conversation_names.append(sc)
             no_talk_names.append(scn)
-        return conversation_names, no_talk_names
+            sentiments.append(sentiment)
+        return conversation_names, no_talk_names, sentiments
 
     def build_graph(self):
         self.graph = nx.Graph()
@@ -39,7 +42,7 @@ class ConversationalGraph(GraphHelper):
             add_kn(self.graph, names)
         for i in range(len(self.conversation_names)):
             for name in self.conversation_names[i]:
-                connect_n_to_nodes(self.graph, self.no_talk_names[i], name)
+                connect_n_to_nodes(self.graph, self.no_talk_names[i], name, self.sentiments[i])
         self.save_graph()
         return self.graph.to_undirected()
 
@@ -52,7 +55,7 @@ class ConversationalGraph(GraphHelper):
         for i in range(len(self.conversation_names)):
             add_kn(graph, self.no_talk_names[i])
             for name in self.conversation_names[i]:
-                connect_n_to_nodes(graph, self.no_talk_names[i], name)
+                connect_n_to_nodes(graph, self.no_talk_names[i], name, self.sentiments[i])
             if i % times_to_build == 0 and i != 0:
                 self.evol_graphs.append(graph.copy())
         self.evol_graphs.append(graph.copy())
