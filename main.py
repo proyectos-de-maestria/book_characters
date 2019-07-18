@@ -53,8 +53,12 @@ def main():
                             print("para el grafo de distancias es necesario un epub")
                             graph = None
                         else:
-                            graph = DistanceGraph(book_path, 'distance_net/graph' + book_without_extension, distance=100)
+                            graph = DistanceGraph(book_path, 'distance_net/graph/' + book_without_extension, distance=100)
                     else:
+                        if book_path.endswith(".epub"):
+                            file = epub.read_epub(book_path)
+                            save_text(book_path, file)
+                            book_path = book_path.replace(".epub", ".txt")
                         graph = ConversationalGraph(book_path,
                                                     'conversational_net/graphs/conv_' + book_without_extension)
                     build_graph(graph)
@@ -81,13 +85,16 @@ def main():
                             stars = graph_measures.center(graph.graph)
                         if comando[1] == 'btwn':
                             stars = graph_measures.top_n_betweenness(graph.graph)
-                            stars = [s for s, v in stars if v > 0.5]
+                            stars = [s for s, v in stars if float(v) > 0.5]
                     for star in stars:
                         print(star)
                 elif comando[0] == 'evol':
-                    main_evol = build_evolution(graph)
-                    data = transform_evol_list_in_dict(main_evol)
-                    bar_graph(data)
+                    if graph.text:
+                        main_evol = build_evolution(graph)
+                        data = transform_evol_list_in_dict(main_evol)
+                        bar_graph(data)
+                    else:
+                        print("se debe cargar primero un libro con el comando book <path>")
                 elif comando[0] == 'cluster':
                     paint_communities(graph.graph)
                     graph.save_graph()
@@ -107,7 +114,32 @@ def main():
                 elif comando[0] == "salvar":
                     graph.save_graph()
                 elif comando[0] == "relacion":
-                    # TODO no tengo esto get_relation_type()
+                    while True:
+                        print("-- elegir primer personaje:")
+                        per = input("-- ")
+                        if per == 'exit':
+                            break
+                        if per in graph.graph.nodes():
+                            print("-- elegir segundo personaje:")
+                            per2 = input("-- ")
+                            if per2 == 'exit':
+                                break
+                            if per2 in graph.graph.nodes():
+                                rel = get_relation_type(graph.graph, per, per2)
+                                try:
+                                    rel = int(rel)
+                                except:
+                                    print(rel)
+                                print("relacion de {0} y {1} es {2}".
+                                      format(per, per2, "negativa" if rel < 0 else "positiva" if rel > 0 else "neutra"))
+                            else:
+                                pos = [x for x in graph.graph.nodes() if x.startswith(per2) or x.lower().startswith(per2)]
+                                if len(pos):
+                                    print("quizas quisiste decir: " + str(pos))
+                        else:
+                            pos = [x for x in graph.graph.nodes() if x.startswith(per) or x.lower().startswith(per)]
+                            if len(pos):
+                                print("quizas quisiste decir: " + str(pos))
                     pass
                 elif comando[0] == "tramas":
                     graph_path = text_in_fquote(str_comando)
@@ -157,7 +189,8 @@ if __name__ == "__main__":
     # # dg = DistanceGraph(book_path, graph_path_distance, distance=100)
     # graph = load_graph(graph_path)
     # # cg.build_graph()
-    # # dg.build_graph()
+
+    # print(get_relation_type(graph, 'Jonathan Harker', 'Jonathan'))
     # # cg.load_graph()
     # print(sustitution_node(graph, 'Dracula'))
     # dg.load_graph()

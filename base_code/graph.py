@@ -11,48 +11,56 @@ from base_code.graph_measures import paint_communities
 from base_code.utils import from_DtoD, get_closest_ady, hamming, count_ones
 
 
-def add_kn(graph, nodes):
+def add_kn(graph, nodes, sentiment):
     nodes = Counter(nodes)
-    if len(nodes.keys( )) > 1:
+    if len(nodes.keys()) > 1:
         add_nodes_to_graph(nodes, graph)
 
-        names = nodes.keys( )
-        edges_kn = [(x, y) for x in names for y in names if x != y]
+        names = nodes.keys()
+        edges_kn = [(x, y,
+                  {'weight': 1 + graph.edges[x, y]['weight'], 'class': sentiment + graph.edges[x, y]['class']})
+                 if graph.has_edge(x, y) else (x, y, {'weight': 1, 'class': sentiment}) for x in names for y in names if x != y]
 
-        graph.add_edges_from(edges_kn, color='red')
+        # graph.add_edges_from(edges_kn, color='red')
+        graph.update(edges=edges_kn)
 
 
 def add_nodes_to_graph(nodes, graph):
-    for name, count in nodes.items( ):
+    for name, count in nodes.items():
         node_count = (graph.node[name]['count'] if name in graph else 1) + count
         graph.add_node(name, count=node_count)
 
 
-def connect_n_to_nodes(graph, nodes, n):
+def connect_n_to_nodes(graph, nodes, n, sentiment):
     nodes = Counter(nodes)
 
-    names = nodes.keys( )
-    edges = [(x, n) for x in names if x != n]
+    names = nodes.keys()
+    # edges = [(x, n) for x in names if x != n]
+    edges = [(n, x,
+              {'weight': 1 + graph.edges[n, x]['weight'], 'class': sentiment + graph.edges[n, x]['class']})
+             if graph.has_edge(n, x) else (n, x, {'weight': 1, 'class': sentiment})
+             for x in names if n != x]
 
     if len(edges):  # only add it to the graph if there is at least one edge
         node_count = graph.node[n]['count'] if n in graph else 1
         graph.add_node(n, count=node_count)
         add_nodes_to_graph(nodes, graph)
 
-        graph.add_edges_from(edges, color='red')
+        # graph.add_edges_from(edges, color='red')
+        graph.update(edges=edges)
 
 
 def add_nodes_by_distance(graph, nodes, node, classiffication):
     nodes[node] = 1
     nodes = Counter(nodes)
 
-    names = nodes.keys( )
+    names = nodes.keys()
     edges = [(node, x,
               {'weight': 1 + graph.edges[node, x]['weight'], 'class': classiffication + graph.edges[node, x]['class']})
              if graph.has_edge(node, x) else (node, x, {'weight': 1, 'class': classiffication})
              for x in names if node != x]
     if len(edges):
-        for name, count in nodes.items( ):
+        for name, count in nodes.items():
             node_count = (graph.node[name]['count'] if name in graph else 0) + count
             graph.add_node(name, count=node_count)
 
