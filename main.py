@@ -128,10 +128,11 @@ def main():
                                 rel = get_relation_type(graph.graph, per, per2)
                                 try:
                                     rel = int(rel)
+                                    print("relacion de {0} y {1} es {2}".
+                                          format(per, per2,
+                                                 "negativa" if rel < 0 else "positiva" if rel > 0 else "neutra"))
                                 except:
                                     print(rel)
-                                print("relacion de {0} y {1} es {2}".
-                                      format(per, per2, "negativa" if rel < 0 else "positiva" if rel > 0 else "neutra"))
                             else:
                                 pos = [x for x in graph.graph.nodes() if x.startswith(per2) or x.lower().startswith(per2)]
                                 if len(pos):
