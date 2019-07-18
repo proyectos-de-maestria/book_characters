@@ -22,13 +22,15 @@ class DistanceGraph(GraphHelper):
             chapter_content = chapters[ch]
             for name in names_in_chapters[ch]:
                 name_index = chapter_content.find(name)
-                portion_text = " ".join(chapter_content[name_index:].split( )[:self.distance])
+                portion_text = " ".join(chapter_content[name_index:].split()[:self.distance])
                 index = name_index - self.distance if name_index - self.distance > 0 else 0
                 better_portion = " ".join(chapter_content[index:].split()[:self.distance])
                 classification = get_sentiment_classification(better_portion)
                 names_in_portion = names_in_text(portion_text)
-                names_correct = self.correferent.remove_correferents(names_in_portion, better_portion)
-                distance_partition.append((name, names_correct, classification))
+                name = self.correferent.remove_correferents({name: 1}, better_portion)
+                if name:
+                    names_correct = self.correferent.remove_correferents(names_in_portion, better_portion)
+                    distance_partition.append((name, names_correct, classification))
         return distance_partition
 
     def build_evolution_graph(self):
@@ -48,7 +50,7 @@ class DistanceGraph(GraphHelper):
         self.graph = nx.Graph( )
         names_to_add = self.__get_names_by_portion__()
         for name, names_correct, classification in names_to_add:
-            add_nodes_by_distance(self.graph, names_correct, name,classification)
+            add_nodes_by_distance(self.graph, names_correct, name, classification)
         self.save_graph()
         return self.graph
 
